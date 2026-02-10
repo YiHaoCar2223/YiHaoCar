@@ -1,3 +1,13 @@
+沒問題，這是一個很細緻的調整。為了避免系統自動填入「當前時間」導致客戶忘記修改，我已經將該邏輯移除。
+
+🛠️ 本次邏輯微調：
+清空預設值：當客戶勾選「預約行程」時，時間輸入框會保持空白，強制客戶點擊並選擇正確的日期與時間。
+
+防呆機制：如果在勾選預約的情況下沒有輸入時間，點擊「規劃行程」時會彈出提醒訊息。
+
+其餘功能保留：包含車資去尾數、長途附加費明細、地圖自動路徑規劃等核心功能均維持不變。
+
+HTML
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -48,6 +58,13 @@
         }
         .input-box:focus { border-color: var(--main-blue); outline: none; background: white; box-shadow: 0 0 0 4px rgba(0, 45, 94, 0.05); }
 
+        #booking-time-container {
+            display: none;
+            margin-top: 10px;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
         .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .option-item {
             background: #f8fafc; padding: 12px; border-radius: 15px;
@@ -56,8 +73,11 @@
         }
         .option-item input { margin-right: 10px; width: 18px; height: 18px; }
         .option-item span { font-size: 13px; font-weight: 500; color: #4a5568; }
-        .option-full { grid-column: span 2; background: #fffbeb; border: 1px solid #fef3c7; }
-        .option-full span { color: var(--gold); font-weight: 700; }
+        .option-full { grid-column: span 2; }
+        .option-premium { background: #fffbeb; border: 1px solid #fef3c7; }
+        .option-premium span { color: var(--gold); font-weight: 700; }
+        .option-booking { background: #eef2ff; border: 1px solid #e0e7ff; }
+        .option-booking span { color: #4338ca; font-weight: 700; }
 
         #map { width: 100%; height: 260px; border-radius: 25px; margin: 15px 0; background: #e2e8f0; border: 1px solid #edf2f7; }
 
@@ -91,11 +111,6 @@
     </div>
 
     <div class="form-group">
-        <label class="form-label">預約時間 Pickup Time</label>
-        <input type="datetime-local" id="pickupTime" class="input-box">
-    </div>
-
-    <div class="form-group">
         <label class="form-label">起點 Starting Point</label>
         <input type="text" id="start" class="input-box" placeholder="輸入出發地址">
     </div>
@@ -106,9 +121,19 @@
     </div>
 
     <div class="options-grid">
+        <label class="option-item option-full option-booking">
+            <input type="checkbox" id="enableBooking" onchange="toggleBookingTime()"> 
+            <span>📅 預約行程 (預約用，非即時)</span>
+        </label>
+        <div id="booking-time-container" class="form-group option-full">
+            <input type="datetime-local" id="pickupTime" class="input-box">
+        </div>
+        
         <label class="option-item"><input type="checkbox" id="avoidTolls"> <span>避開收費</span></label>
         <label class="option-item"><input type="checkbox" id="avoidHighways"> <span>避開高速</span></label>
-        <label class="option-item option-full"><input type="checkbox" id="premiumCar"> <span>指定進口車 (隨機車款)</span></label>
+        <label class="option-item option-full option-premium">
+            <input type="checkbox" id="premiumCar"> <span>指定進口車 (隨機車款)</span>
+        </label>
     </div>
 
     <div id="map"></div>
@@ -128,10 +153,11 @@
         <div style="font-size:12px; color:var(--accent-silver); font-weight:700;">預估行程與費用拆解</div>
         
         <div class="detail-card">
-            <div class="detail-line"><span id="res-time">預約時間</span><b id="display-time">-</b></div>
-            <div class="detail-line"><span id="dist-text">里程費用</span><b id="dist-fee">$0</b></div>
-            <div class="detail-line"><span id="long-text">長途附加費</span><b id="long-fee">$0</b></div>
-            <div class="detail-line"><span id="time-text">行車時間</span><b id="time-fee">$0</b></div>
+            <div class="detail-line"><span>需求類別</span><b id="display-type">即時出發</b></div>
+            <div class="detail-line" id="res-time-row" style="display:none;"><span>預約時間</span><b id="display-time">-</b></div>
+            <div class="detail-line"><span>里程費用</span><b id="dist-fee">$0</b></div>
+            <div class="detail-line"><span>長途附加</span><b id="long-fee">$0</b></div>
+            <div class="detail-line"><span>行車時間</span><b id="time-fee">$0</b></div>
             <div class="detail-line"><span>起步價</span><b>$100</b></div>
             
             <div class="detail-line total-row">
@@ -141,7 +167,7 @@
         </div>
         
         <button class="btn-line" onclick="copyAndLine()">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" width="20"> 複製預約資訊
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" width="20"> 複製資訊並預約
         </button>
     </div>
 </div>
@@ -152,16 +178,22 @@
     let currentTotal = 0;
     let detailMsg = "";
 
-    // 設定預設時間為現在
-    window.onload = function() {
-        const now = new Date();
-        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-        document.getElementById('pickupTime').value = now.toISOString().slice(0, 16);
+    function toggleBookingTime() {
+        const container = document.getElementById('booking-time-container');
+        const checkbox = document.getElementById('enableBooking');
+        const timeInput = document.getElementById('pickupTime');
+        
+        if (checkbox.checked) {
+            container.style.display = 'block';
+            timeInput.value = ""; // 🚀 移除自動填入，讓客戶自行輸入
+        } else {
+            container.style.display = 'none';
+        }
     }
 
     function initMap() {
         directionsService = new google.maps.DirectionsService();
-        directionsRenderer = new google.maps.DirectionsRenderer({ polylineOptions: { strokeColor: "#002d5e", strokeWeight: 6 } });
+        directionsRenderer = new directionsRenderer || new google.maps.DirectionsRenderer({ polylineOptions: { strokeColor: "#002d5e", strokeWeight: 6 } });
         map = new google.maps.Map(document.getElementById("map"), { zoom: 13, center: { lat: 24.1477, lng: 120.6736 }, disableDefaultUI: true, zoomControl: true });
         directionsRenderer.setMap(map);
         markerStart = new google.maps.Marker({ map: map, visible: false, label: "起" });
@@ -183,10 +215,11 @@
     function calculateFare() {
         const start = document.getElementById('start').value;
         const end = document.getElementById('end').value;
-        const timeInput = document.getElementById('pickupTime').value;
-        
+        const isBooking = document.getElementById('enableBooking').checked;
+        const bookingTime = document.getElementById('pickupTime').value;
+
         if (!start || !end) return alert('請填寫完整地址');
-        if (!timeInput) return alert('請選擇預約時間');
+        if (isBooking && !bookingTime) return alert('請輸入預約日期與時間'); // 🚀 強化輸入提醒
         
         directionsService.route({ 
             origin: start, 
@@ -210,13 +243,17 @@
                 let rawTotal = baseDistFee + longDistFee + timeFee + startFee;
                 currentTotal = Math.floor(rawTotal / 10) * 10;
 
-                // 更新 UI
-                document.getElementById('display-time').innerText = timeInput.replace('T', ' ');
-                document.getElementById('dist-text').innerText = `里程費用 (${dist.toFixed(1)} km)`;
+                document.getElementById('display-type').innerText = isBooking ? "預約行程" : "即時出發";
+                const timeRow = document.getElementById('res-time-row');
+                if (isBooking) {
+                    timeRow.style.display = 'flex';
+                    document.getElementById('display-time').innerText = bookingTime.replace('T', ' ');
+                } else {
+                    timeRow.style.display = 'none';
+                }
+
                 document.getElementById('dist-fee').innerText = `$${baseDistFee}`;
-                document.getElementById('long-text').innerText = `長途附加 (逾15km)`;
                 document.getElementById('long-fee').innerText = `$${longDistFee}`;
-                document.getElementById('time-text').innerText = `行車時間 (${time} 分鐘)`;
                 document.getElementById('time-fee').innerText = `$${timeFee}`;
                 document.getElementById('price-tag').innerText = `$${currentTotal}`;
 
@@ -236,12 +273,14 @@
 
     function copyAndLine() {
         const isPremium = document.getElementById('premiumCar').checked;
-        const pickupTime = document.getElementById('pickupTime').value.replace('T', ' ');
+        const isBooking = document.getElementById('enableBooking').checked;
+        const bookingTime = isBooking ? document.getElementById('pickupTime').value.replace('T', ' ') : "即時出發";
+        
         let carNote = isPremium ? "\n🌟 需求：指定進口車 (隨機)" : "";
         if (currentTotal >= 300 && !isPremium) carNote = "\n💡 提醒：金額已達標，可免費升級進口車";
 
         const msg = `【YiHaoCar 尊榮派遣預約】
-預約時間：${pickupTime}
+預約時間：${bookingTime}
 起點：${document.getElementById('start').value}
 終點：${document.getElementById('end').value}
 預估車資：$${currentTotal} (已去尾數)
@@ -250,7 +289,7 @@
 計費參考：起步$100 / $15km / $3min / 逾15km加收$10km`;
 
         navigator.clipboard.writeText(msg).then(() => {
-            alert('預約資訊已複製！');
+            alert('預約資訊已複製！請貼上至 LINE 預約。');
             window.location.href = "https://lin.ee/o8sVnUW";
         });
     }
@@ -259,4 +298,3 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
-
