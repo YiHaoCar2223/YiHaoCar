@@ -71,7 +71,8 @@
 
         #map { width: 100%; height: 260px; border-radius: 25px; margin: 15px 0; background: #e2e8f0; border: 1px solid #edf2f7; }
 
-        .btn-calculate { width: 100%; background: var(--main-blue); color: white; padding: 18px; font-size: 18px; font-weight: 700; border: none; border-radius: 20px; cursor: pointer; margin-bottom: 20px; }
+        .btn-calculate { width: 100%; background: var(--main-blue); color: white; padding: 18px; font-size: 18px; font-weight: 700; border: none; border-radius: 20px; cursor: pointer; margin-bottom: 20px; transition: 0.3s; }
+        .btn-calculate:disabled { background: var(--accent-silver); cursor: not-allowed; opacity: 0.6; }
 
         .static-fee-info {
             background: #f8fafc; padding: 20px; border-radius: 22px;
@@ -172,7 +173,6 @@
         const container = document.getElementById('booking-time-container');
         const checkbox = document.getElementById('enableBooking');
         const timeInput = document.getElementById('pickupTime');
-        
         if (checkbox.checked) {
             container.style.display = 'block';
             timeInput.value = ""; 
@@ -181,7 +181,6 @@
         }
     }
 
-    // ✨ 修正後的 initMap 邏輯
     function initMap() {
         directionsService = new google.maps.DirectionsService();
         directionsRenderer = new google.maps.DirectionsRenderer({ 
@@ -196,13 +195,22 @@
         });
         
         directionsRenderer.setMap(map);
-        
         markerStart = new google.maps.Marker({ map: map, visible: false, label: "起" });
         markerEnd = new google.maps.Marker({ map: map, visible: false, label: "終" });
         
-        const options = { componentRestrictions: { country: "tw" } };
+        const options = { 
+            componentRestrictions: { country: "tw" },
+            // 🚀 優化 1：限制搜尋結果類型為地址
+            types: ['address']
+        };
+        
         autocompleteStart = new google.maps.places.Autocomplete(document.getElementById('start'), options);
         autocompleteEnd = new google.maps.places.Autocomplete(document.getElementById('end'), options);
+
+        // 🚀 優化 2：限制回傳欄位 (Fields Restriction)
+        // 只拿座標 (geometry) 和地址名稱 (name)，不拿餐廳評論或電話，費用大幅降低
+        autocompleteStart.setFields(['geometry', 'formatted_address']);
+        autocompleteEnd.setFields(['geometry', 'formatted_address']);
         
         autocompleteStart.addListener('place_changed', () => { 
             const place = autocompleteStart.getPlace(); 
@@ -226,10 +234,15 @@
         const end = document.getElementById('end').value;
         const isBooking = document.getElementById('enableBooking').checked;
         const bookingTime = document.getElementById('pickupTime').value;
+        const btn = document.getElementById('calc-btn');
 
         if (!start || !end) return alert('請填寫完整地址');
         if (isBooking && !bookingTime) return alert('請輸入預約日期與時間');
         
+        // 🚀 優化 3：防抖鎖定 (防止瘋狂重複點擊浪費 API 次數)
+        btn.disabled = true;
+        btn.innerText = "計算中...";
+
         directionsService.route({ 
             origin: start, 
             destination: end, 
@@ -237,6 +250,10 @@
             avoidTolls: document.getElementById('avoidTolls').checked, 
             avoidHighways: document.getElementById('avoidHighways').checked 
         }, (result, status) => {
+            // 解鎖按鈕
+            btn.disabled = false;
+            btn.innerText = "規劃行程並試算費用";
+
             if (status == 'OK') {
                 markerStart.setVisible(false); markerEnd.setVisible(false);
                 directionsRenderer.setDirections(result);
@@ -276,6 +293,8 @@
                 document.getElementById('fee-info-box').style.display = 'none';
                 document.getElementById('result').style.display = 'block';
                 document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+            } else {
+                alert('規劃失敗，請檢查地址是否正確。');
             }
         });
     }
@@ -284,7 +303,6 @@
         const isPremium = document.getElementById('premiumCar').checked;
         const isBooking = document.getElementById('enableBooking').checked;
         const bookingTime = isBooking ? document.getElementById('pickupTime').value.replace('T', ' ') : "即時出發";
-        
         let carNote = isPremium ? "\n🌟 需求：指定進口車 (隨機)" : "";
         if (currentTotal >= 300 && !isPremium) carNote = "\n💡 提醒：金額已達標，可免費升級進口車";
 
