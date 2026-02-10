@@ -1,3 +1,13 @@
+這是一個非常實用的功能更新。為了讓您的派遣流程更完整，我已經在地址輸入欄位下方新增了**「預約時間」**選項。
+
+📅 本次更新重點：
+新增時間選擇器：使用 HTML5 標準時間控制項，客戶可以直接點選日期與時間。
+
+預約資訊整合：當點擊「複製預約」時，預約日期與時間會自動加入到複製的文字明細中，方便您在 LINE 收到後直接排程。
+
+UI 優化：將時間輸入框樣式與地址輸入框對齊，保持視覺的一致性與尊榮感。
+
+HTML
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -44,6 +54,7 @@
             border: 1px solid #edf2f7; border-radius: 18px; 
             font-size: 15px; background: #f8fafc; 
             color: #1a202c; box-sizing: border-box; transition: 0.3s;
+            font-family: inherit;
         }
         .input-box:focus { border-color: var(--main-blue); outline: none; background: white; box-shadow: 0 0 0 4px rgba(0, 45, 94, 0.05); }
 
@@ -58,11 +69,10 @@
         .option-full { grid-column: span 2; background: #fffbeb; border: 1px solid #fef3c7; }
         .option-full span { color: var(--gold); font-weight: 700; }
 
-        #map { width: 100%; height: 280px; border-radius: 25px; margin: 15px 0; background: #e2e8f0; border: 1px solid #edf2f7; }
+        #map { width: 100%; height: 260px; border-radius: 25px; margin: 15px 0; background: #e2e8f0; border: 1px solid #edf2f7; }
 
         .btn-calculate { width: 100%; background: var(--main-blue); color: white; padding: 18px; font-size: 18px; font-weight: 700; border: none; border-radius: 20px; cursor: pointer; margin-bottom: 20px; }
 
-        /* 常駐費用標準區 */
         .static-fee-info {
             background: #f8fafc; padding: 20px; border-radius: 22px;
             border: 1px solid #edf2f7; margin-top: 10px;
@@ -71,7 +81,6 @@
         .fee-row { display: flex; justify-content: space-between; font-size: 13px; color: #64748b; margin-bottom: 6px; }
         .fee-row b { color: #1e293b; }
 
-        /* ✨ 試算明細結果樣式 */
         .result-panel { margin-top: 20px; padding: 25px; border-radius: 30px; background: #ffffff; border: 2px solid var(--main-blue); display: none; }
         .detail-card { background: #f8fafc; padding: 15px; border-radius: 20px; margin: 15px 0; border: 1px solid #e2e8f0; }
         .detail-line { display: flex; justify-content: space-between; font-size: 13px; color: #4a5568; margin-bottom: 8px; }
@@ -89,6 +98,11 @@
     <div class="brand-zone">
         <h1 class="brand-logo">YiHaoCar</h1>
         <div class="brand-tagline">尊榮座駕派遣</div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">預約時間 Pickup Time</label>
+        <input type="datetime-local" id="pickupTime" class="input-box">
     </div>
 
     <div class="form-group">
@@ -124,9 +138,10 @@
         <div style="font-size:12px; color:var(--accent-silver); font-weight:700;">預估行程與費用拆解</div>
         
         <div class="detail-card">
-            <div class="detail-line"><span id="dist-text">里程 0 km</span><b id="dist-fee">$0</b></div>
+            <div class="detail-line"><span id="res-time">預約時間</span><b id="display-time">-</b></div>
+            <div class="detail-line"><span id="dist-text">里程費用</span><b id="dist-fee">$0</b></div>
             <div class="detail-line"><span id="long-text">長途附加費</span><b id="long-fee">$0</b></div>
-            <div class="detail-line"><span id="time-text">時間 0 分鐘</span><b id="time-fee">$0</b></div>
+            <div class="detail-line"><span id="time-text">行車時間</span><b id="time-fee">$0</b></div>
             <div class="detail-line"><span>起步價</span><b>$100</b></div>
             
             <div class="detail-line total-row">
@@ -136,7 +151,7 @@
         </div>
         
         <button class="btn-line" onclick="copyAndLine()">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" width="20"> 複製資訊並預約
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" width="20"> 複製預約資訊
         </button>
     </div>
 </div>
@@ -146,6 +161,13 @@
     let markerStart, markerEnd, autocompleteStart, autocompleteEnd;
     let currentTotal = 0;
     let detailMsg = "";
+
+    // 設定預設時間為現在
+    window.onload = function() {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        document.getElementById('pickupTime').value = now.toISOString().slice(0, 16);
+    }
 
     function initMap() {
         directionsService = new google.maps.DirectionsService();
@@ -171,7 +193,10 @@
     function calculateFare() {
         const start = document.getElementById('start').value;
         const end = document.getElementById('end').value;
+        const timeInput = document.getElementById('pickupTime').value;
+        
         if (!start || !end) return alert('請填寫完整地址');
+        if (!timeInput) return alert('請選擇預約時間');
         
         directionsService.route({ 
             origin: start, 
@@ -187,20 +212,16 @@
                 const dist = leg.distance.value / 1000;
                 const time = Math.ceil(leg.duration.value / 60);
                 
-                // 1. 基本里程費 (15元/km)
                 let baseDistFee = Math.round(dist * 15);
-                // 2. 長途附加費 (15km後每km+10元)
                 let longDistFee = dist > 15 ? Math.round((dist - 15) * 10) : 0;
-                // 3. 時間費 (3元/min)
                 let timeFee = time * 3;
-                // 4. 起步價
                 let startFee = 100;
 
-                // 總計並去尾數
                 let rawTotal = baseDistFee + longDistFee + timeFee + startFee;
                 currentTotal = Math.floor(rawTotal / 10) * 10;
 
-                // 更新介面
+                // 更新 UI
+                document.getElementById('display-time').innerText = timeInput.replace('T', ' ');
                 document.getElementById('dist-text').innerText = `里程費用 (${dist.toFixed(1)} km)`;
                 document.getElementById('dist-fee').innerText = `$${baseDistFee}`;
                 document.getElementById('long-text').innerText = `長途附加 (逾15km)`;
@@ -209,10 +230,8 @@
                 document.getElementById('time-fee').innerText = `$${timeFee}`;
                 document.getElementById('price-tag').innerText = `$${currentTotal}`;
 
-                // 準備複製的明細
                 detailMsg = `里程費$${baseDistFee} + 長途費$${longDistFee} + 時間費$${timeFee} + 起步$100`;
 
-                // 門檻提醒
                 const alertBox = document.getElementById('upgrade-alert');
                 const premiumCheckbox = document.getElementById('premiumCar');
                 if (currentTotal >= 300 && !premiumCheckbox.checked) alertBox.style.display = 'block';
@@ -227,10 +246,12 @@
 
     function copyAndLine() {
         const isPremium = document.getElementById('premiumCar').checked;
+        const pickupTime = document.getElementById('pickupTime').value.replace('T', ' ');
         let carNote = isPremium ? "\n🌟 需求：指定進口車 (隨機)" : "";
         if (currentTotal >= 300 && !isPremium) carNote = "\n💡 提醒：金額已達標，可免費升級進口車";
 
         const msg = `【YiHaoCar 尊榮派遣預約】
+預約時間：${pickupTime}
 起點：${document.getElementById('start').value}
 終點：${document.getElementById('end').value}
 預估車資：$${currentTotal} (已去尾數)
@@ -239,7 +260,7 @@
 計費參考：起步$100 / $15km / $3min / 逾15km加收$10km`;
 
         navigator.clipboard.writeText(msg).then(() => {
-            alert('行程資訊與明細已複製！');
+            alert('預約資訊已複製！');
             window.location.href = "https://lin.ee/o8sVnUW";
         });
     }
