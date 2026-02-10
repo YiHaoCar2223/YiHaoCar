@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
@@ -36,7 +37,7 @@
         .brand-tagline { font-size: 14px; font-weight: 400; color: var(--accent-silver); letter-spacing: 5px; margin-top: 5px; }
 
         .form-group { margin-bottom: 15px; position: relative; }
-        .form-label { font-size: 12px; font-weight: 900; margin-bottom: 6px; display: block; color: var(--main-blue); opacity: 0.7; }
+        .form-label { font-size: 11px; font-weight: 900; margin-bottom: 6px; display: block; color: var(--main-blue); opacity: 0.7; }
 
         .input-box {
             width: 100%; padding: 15px 18px; 
@@ -57,27 +58,28 @@
         .option-full { grid-column: span 2; background: #fffbeb; border: 1px solid #fef3c7; }
         .option-full span { color: var(--gold); font-weight: 700; }
 
-        #map { width: 100%; height: 300px; border-radius: 25px; margin: 15px 0; background: #e2e8f0; border: 1px solid #edf2f7; }
+        #map { width: 100%; height: 280px; border-radius: 25px; margin: 15px 0; background: #e2e8f0; border: 1px solid #edf2f7; }
 
-        .btn-calculate { width: 100%; background: var(--main-blue); color: white; padding: 18px; font-size: 18px; font-weight: 700; border: none; border-radius: 20px; cursor: pointer; }
+        .btn-calculate { width: 100%; background: var(--main-blue); color: white; padding: 18px; font-size: 18px; font-weight: 700; border: none; border-radius: 20px; cursor: pointer; margin-bottom: 20px; }
 
-        #upgrade-alert {
-            display: none; background: #fff4e5; color: #c2410c; padding: 12px; border-radius: 15px; 
-            margin-bottom: 15px; font-size: 13px; font-weight: 700; text-align: center; border: 1px dashed #fdba74;
+        /* 常駐費用標準區 */
+        .static-fee-info {
+            background: #f8fafc; padding: 20px; border-radius: 22px;
+            border: 1px solid #edf2f7; margin-top: 10px;
         }
+        .fee-title { font-size: 14px; font-weight: 900; color: var(--main-blue); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .fee-row { display: flex; justify-content: space-between; font-size: 13px; color: #64748b; margin-bottom: 6px; }
+        .fee-row b { color: #1e293b; }
 
-        .result-panel { margin-top: 20px; padding: 25px; border-radius: 25px; background: #fdfdfd; border: 1px solid #edf2f7; display: none; }
-        .price-text { font-size: 42px; font-weight: 900; color: var(--main-blue); margin: 5px 0; letter-spacing: -1px; }
+        /* ✨ 試算明細結果樣式 */
+        .result-panel { margin-top: 20px; padding: 25px; border-radius: 30px; background: #ffffff; border: 2px solid var(--main-blue); display: none; }
+        .detail-card { background: #f8fafc; padding: 15px; border-radius: 20px; margin: 15px 0; border: 1px solid #e2e8f0; }
+        .detail-line { display: flex; justify-content: space-between; font-size: 13px; color: #4a5568; margin-bottom: 8px; }
+        .detail-line b { color: #1a202c; font-weight: 700; }
+        .total-row { border-top: 2px solid #cbd5e1; padding-top: 10px; margin-top: 10px; }
+        .price-text { font-size: 46px; font-weight: 900; color: var(--main-blue); letter-spacing: -2px; }
 
-        /* 計費明細區 */
-        .fee-details-box {
-            background: #f1f5f9; padding: 15px; border-radius: 18px; margin-top: 15px;
-        }
-        .fee-details-title { font-size: 12px; font-weight: 900; color: var(--main-blue); margin-bottom: 8px; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px; }
-        .fee-line { display: flex; justify-content: space-between; font-size: 13px; color: #475569; margin-bottom: 4px; }
-        .fee-line b { color: #1e293b; }
-
-        .final-disclaimer { margin-top: 15px; padding-top: 15px; border-top: 1px solid #f1f5f9; font-size: 12px; color: #94a3b8; line-height: 1.6; font-style: italic; }
+        #upgrade-alert { display: none; background: #fff4e5; color: #c2410c; padding: 12px; border-radius: 15px; margin-bottom: 15px; font-size: 13px; font-weight: 700; text-align: center; border: 1px dashed #fdba74; }
         .btn-line { width: 100%; background: var(--line-green); color: white; padding: 16px; font-size: 17px; font-weight: 700; border: none; border-radius: 20px; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; }
     </style>
 </head>
@@ -90,42 +92,49 @@
     </div>
 
     <div class="form-group">
-        <label class="form-label">💎 尊榮起點</label>
-        <input type="text" id="start" class="input-box" placeholder="請輸入出發地址">
+        <label class="form-label">起點 Starting Point</label>
+        <input type="text" id="start" class="input-box" placeholder="輸入出發地址">
     </div>
 
     <div class="form-group">
-        <label class="form-label">🏰 抵達目的地</label>
-        <input type="text" id="end" class="input-box" placeholder="請輸入目的地">
+        <label class="form-label">終點 Destination</label>
+        <input type="text" id="end" class="input-box" placeholder="輸入目的地">
     </div>
 
     <div class="options-grid">
-        <label class="option-item"><input type="checkbox" id="avoidTolls"> <span>避開收費路段</span></label>
-        <label class="option-item"><input type="checkbox" id="avoidHighways"> <span>避開高速公路</span></label>
+        <label class="option-item"><input type="checkbox" id="avoidTolls"> <span>避開收費</span></label>
+        <label class="option-item"><input type="checkbox" id="avoidHighways"> <span>避開高速</span></label>
         <label class="option-item option-full"><input type="checkbox" id="premiumCar"> <span>指定進口車 (隨機車款)</span></label>
     </div>
 
     <div id="map"></div>
     <div id="upgrade-alert">✨ 預估車資已達標，升級進口車不加價！</div>
-    <button id="calc-btn" class="btn-calculate" onclick="calculateFare()">規劃專屬行程</button>
+    
+    <button id="calc-btn" class="btn-calculate" onclick="calculateFare()">規劃行程並試算費用</button>
+
+    <div class="static-fee-info" id="fee-info-box">
+        <div class="fee-title">📋 計費標準</div>
+        <div class="fee-row"><span>起步車資</span><b>100 元</b></div>
+        <div class="fee-row"><span>基本里程費</span><b>15 元 / km</b></div>
+        <div class="fee-row"><span>行車時間費</span><b>3 元 / min</b></div>
+        <div class="fee-row"><span>長途附加費(逾15km)</span><b>10 元 / km</b></div>
+    </div>
 
     <div id="result" class="result-panel">
-        <div style="font-size:12px; color:var(--accent-silver); font-weight:700;">預估行程總金額 (已去尾數)</div>
-        <div id="price-tag" class="price-text">$0</div>
-        <div id="info-tag" style="font-size:14px; color:#4a5568; line-height:1.6;"></div>
-
-        <div class="fee-details-box">
-            <div class="fee-details-title">💰 費用標準說明</div>
-            <div class="fee-line"><span>起步車資</span><b>100 元</b></div>
-            <div class="fee-line"><span>基本里程費</span><b>15 元 / 公里</b></div>
-            <div class="fee-line"><span>行車時間費</span><b>3 元 / 分鐘</b></div>
-            <div class="fee-line"><span>長途附加費</span><b>10 元 / 公里 (15km後)</b></div>
-            <div class="fee-line" style="margin-top:5px; padding-top:5px; border-top:1px dashed #cbd5e1;">
-                <span>指定進口車最低消費</span><b style="color:var(--gold);">300 元</b>
+        <div style="font-size:12px; color:var(--accent-silver); font-weight:700;">預估行程與費用拆解</div>
+        
+        <div class="detail-card">
+            <div class="detail-line"><span id="dist-text">里程 0 km</span><b id="dist-fee">$0</b></div>
+            <div class="detail-line"><span id="long-text">長途附加費</span><b id="long-fee">$0</b></div>
+            <div class="detail-line"><span id="time-text">時間 0 分鐘</span><b id="time-fee">$0</b></div>
+            <div class="detail-line"><span>起步價</span><b>$100</b></div>
+            
+            <div class="detail-line total-row">
+                <span style="font-weight:900; color:var(--main-blue);">總計 (去尾數)</span>
+                <span id="price-tag" class="price-text">$0</span>
             </div>
         </div>
-
-        <div class="final-disclaimer">※ 此金額為系統依路程初步試算，最終車資將由專人聯繫確認。</div>
+        
         <button class="btn-line" onclick="copyAndLine()">
             <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" width="20"> 複製資訊並預約
         </button>
@@ -136,6 +145,7 @@
     let map, directionsService, directionsRenderer;
     let markerStart, markerEnd, autocompleteStart, autocompleteEnd;
     let currentTotal = 0;
+    let detailMsg = "";
 
     function initMap() {
         directionsService = new google.maps.DirectionsService();
@@ -161,11 +171,15 @@
     function calculateFare() {
         const start = document.getElementById('start').value;
         const end = document.getElementById('end').value;
-        if (!start || !end) return alert('請填寫完整地點資訊');
-        const avoidTolls = document.getElementById('avoidTolls').checked;
-        const avoidHighways = document.getElementById('avoidHighways').checked;
-
-        directionsService.route({ origin: start, destination: end, travelMode: 'DRIVING', avoidTolls: avoidTolls, avoidHighways: avoidHighways }, (result, status) => {
+        if (!start || !end) return alert('請填寫完整地址');
+        
+        directionsService.route({ 
+            origin: start, 
+            destination: end, 
+            travelMode: 'DRIVING', 
+            avoidTolls: document.getElementById('avoidTolls').checked, 
+            avoidHighways: document.getElementById('avoidHighways').checked 
+        }, (result, status) => {
             if (status == 'OK') {
                 markerStart.setVisible(false); markerEnd.setVisible(false);
                 directionsRenderer.setDirections(result);
@@ -173,25 +187,38 @@
                 const dist = leg.distance.value / 1000;
                 const time = Math.ceil(leg.duration.value / 60);
                 
-                // 🚀 車資邏輯：
-                // 1. 起步價 100
-                // 2. 里程費 15/km
-                // 3. 時間費 3/min
-                // 4. 長途費：超過 15km 每公里加收 10 元
-                let longDistFee = dist > 15 ? (dist - 15) * 10 : 0;
-                let rawTotal = 100 + (dist * 15) + (time * 3) + longDistFee;
+                // 1. 基本里程費 (15元/km)
+                let baseDistFee = Math.round(dist * 15);
+                // 2. 長途附加費 (15km後每km+10元)
+                let longDistFee = dist > 15 ? Math.round((dist - 15) * 10) : 0;
+                // 3. 時間費 (3元/min)
+                let timeFee = time * 3;
+                // 4. 起步價
+                let startFee = 100;
 
-                // 🚀 無條件去個位數 (捨去尾數)
+                // 總計並去尾數
+                let rawTotal = baseDistFee + longDistFee + timeFee + startFee;
                 currentTotal = Math.floor(rawTotal / 10) * 10;
 
-                document.getElementById('price-tag').innerText = `$${currentTotal.toLocaleString()}`;
-                document.getElementById('info-tag').innerText = `✨ 里程：${dist.toFixed(1)} km | ⏳ 車程：${time} 分鐘`;
-                
+                // 更新介面
+                document.getElementById('dist-text').innerText = `里程費用 (${dist.toFixed(1)} km)`;
+                document.getElementById('dist-fee').innerText = `$${baseDistFee}`;
+                document.getElementById('long-text').innerText = `長途附加 (逾15km)`;
+                document.getElementById('long-fee').innerText = `$${longDistFee}`;
+                document.getElementById('time-text').innerText = `行車時間 (${time} 分鐘)`;
+                document.getElementById('time-fee').innerText = `$${timeFee}`;
+                document.getElementById('price-tag').innerText = `$${currentTotal}`;
+
+                // 準備複製的明細
+                detailMsg = `里程費$${baseDistFee} + 長途費$${longDistFee} + 時間費$${timeFee} + 起步$100`;
+
+                // 門檻提醒
                 const alertBox = document.getElementById('upgrade-alert');
                 const premiumCheckbox = document.getElementById('premiumCar');
                 if (currentTotal >= 300 && !premiumCheckbox.checked) alertBox.style.display = 'block';
                 else alertBox.style.display = 'none';
 
+                document.getElementById('fee-info-box').style.display = 'none';
                 document.getElementById('result').style.display = 'block';
                 document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
             }
@@ -200,19 +227,19 @@
 
     function copyAndLine() {
         const isPremium = document.getElementById('premiumCar').checked;
-        let carNote = isPremium ? "\n🌟 需求：指定進口車 (升級不加價)" : "";
+        let carNote = isPremium ? "\n🌟 需求：指定進口車 (隨機)" : "";
         if (currentTotal >= 300 && !isPremium) carNote = "\n💡 提醒：金額已達標，可免費升級進口車";
 
         const msg = `【YiHaoCar 尊榮派遣預約】
 起點：${document.getElementById('start').value}
 終點：${document.getElementById('end').value}
-預估車資：${document.getElementById('price-tag').innerText} (已去尾數)
-行程明細：${document.getElementById('info-tag').innerText}${carNote}
+預估車資：$${currentTotal} (已去尾數)
+費用明細：${detailMsg}${carNote}
 ---
-計費標準：起步$100 / $15km / $3min / 逾15km每km+$10 / 進口低消$300`;
+計費參考：起步$100 / $15km / $3min / 逾15km加收$10km`;
 
         navigator.clipboard.writeText(msg).then(() => {
-            alert('行程資訊已複製！請貼上至 LINE。');
+            alert('行程資訊與明細已複製！');
             window.location.href = "https://lin.ee/o8sVnUW";
         });
     }
@@ -221,4 +248,3 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
-
