@@ -1,3 +1,14 @@
+既然下拉選單已經成功出現，代表您的 API 基礎建設已經完全打通了！
+
+要加入「避開收費路段」與「避開高速公路」功能，我們需要修改兩個部分：
+
+HTML 面板：加入兩個勾選框 (Checkbox)。
+
+JavaScript 邏輯：在呼叫 getDistanceMatrix 時，加入 avoidHighways 與 avoidTolls 參數。
+
+以下是優化後的完整程式碼，您可以直接替換原本的檔案：
+
+HTML
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -41,7 +52,7 @@
             margin-bottom: 25px;
         }
         .input-group {
-            margin-bottom: 18px;
+            margin-bottom: 15px;
         }
         label {
             display: block;
@@ -57,6 +68,27 @@
             box-sizing: border-box;
             font-size: 16px;
         }
+        /* 新增選項樣式 */
+        .options-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            background: #fdfdfd;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #eee;
+        }
+        .option-item {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #555;
+            cursor: pointer;
+        }
+        .option-item input {
+            margin-right: 6px;
+            cursor: pointer;
+        }
         button {
             width: 100%;
             padding: 15px;
@@ -70,7 +102,7 @@
         .btn-calc {
             background-color: var(--primary-color);
             color: white;
-            margin-top: 10px;
+            margin-top: 5px;
         }
         .btn-calc:disabled { background-color: #ccc; }
         .result-box {
@@ -102,7 +134,6 @@
             padding: 10px;
             border-radius: 5px;
         }
-        /* 修正 Google 下拉選單在手機上的顯示 */
         .pac-container { z-index: 9999 !important; border-radius: 8px; }
     </style>
 </head>
@@ -120,6 +151,15 @@
     <div class="input-group">
         <label>🏁 終點</label>
         <input type="text" id="end" placeholder="輸入地址或地標">
+    </div>
+
+    <div class="options-group">
+        <label class="option-item">
+            <input type="checkbox" id="avoidHighways"> 避開高速公路
+        </label>
+        <label class="option-item">
+            <input type="checkbox" id="avoidTolls"> 避開收費路段
+        </label>
     </div>
 
     <button id="calc-btn" class="btn-calc" onclick="calculateFare()">開始試算車資</button>
@@ -145,7 +185,6 @@
 <script>
     let autocompleteStart, autocompleteEnd;
 
-    // Google Maps API 載入後的啟動函式
     function initService() {
         const options = { componentRestrictions: { country: "tw" } };
         autocompleteStart = new google.maps.places.Autocomplete(document.getElementById('start'), options);
@@ -156,6 +195,10 @@
         const start = document.getElementById('start').value;
         const end = document.getElementById('end').value;
         const btn = document.getElementById('calc-btn');
+        
+        // 取得避開選項
+        const avoidHwy = document.getElementById('avoidHighways').checked;
+        const avoidToll = document.getElementById('avoidTolls').checked;
 
         if (!start || !end) {
             alert('請輸入完整的起點與終點');
@@ -170,6 +213,8 @@
             origins: [start],
             destinations: [end],
             travelMode: 'DRIVING',
+            avoidHighways: avoidHwy,
+            avoidTolls: avoidToll,
         }, (response, status) => {
             btn.disabled = false;
             btn.innerText = '開始試算車資';
@@ -177,7 +222,7 @@
             if (status === 'OK') {
                 const element = response.rows[0].elements[0];
                 if (element.status === 'ZERO_RESULTS') {
-                    alert('找不到路徑，請嘗試更精確的地址');
+                    alert('找不到路徑，請確認地址或勾選條件是否合理');
                     return;
                 }
 
@@ -191,14 +236,20 @@
                 let extraFare = (distanceKm > 15) ? (distanceKm - 15) * 10 : 0;
                 const totalFare = Math.round(baseFare + distanceFare + timeFare + extraFare);
 
+                // 標記選項文字
+                let optionTag = "";
+                if(avoidHwy || avoidToll) {
+                    optionTag = `(已避開: ${avoidHwy ? '高速公路 ' : ''}${avoidToll ? '收費路段' : ''})\n`;
+                }
+
                 const resultBox = document.getElementById('result');
                 const detailsText = document.getElementById('details-text');
                 
-                detailsText.innerText = `預估距離：${distanceKm.toFixed(1)} 公里\n預估時間：${durationMin} 分鐘\n--------------------\n預估總車資：$${totalFare} 元`;
+                detailsText.innerText = `${optionTag}預估距離：${distanceKm.toFixed(1)} 公里\n預估時間：${durationMin} 分鐘\n--------------------\n預估總車資：$${totalFare} 元`;
                 resultBox.style.display = 'block';
                 resultBox.scrollIntoView({ behavior: 'smooth' });
             } else {
-                alert('系統錯誤: ' + status + '\n請檢查 API 是否啟用或帳單設定。');
+                alert('系統錯誤: ' + status);
             }
         });
     }
