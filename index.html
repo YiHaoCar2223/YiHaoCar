@@ -57,7 +57,6 @@
             box-sizing: border-box;
             font-size: 16px;
         }
-        /* 新增選項樣式 */
         .options-group {
             display: flex;
             gap: 15px;
@@ -161,6 +160,9 @@
             ※ 預估金額僅供參考，若遇連假加成、路徑更改，以司機報價或跳表為準。
         </div>
 
+        <p style="font-size: 12px; color: #666; text-align: center; margin-bottom: 10px;">
+            💡 點擊下方按鈕後，到 LINE 對話框「長按貼上」即可傳送預約資訊。
+        </p>
         <button class="btn-line" onclick="copyAndLine()">📲 複製並預約行程</button>
     </div>
 
@@ -184,8 +186,6 @@
         const start = document.getElementById('start').value;
         const end = document.getElementById('end').value;
         const btn = document.getElementById('calc-btn');
-        
-        // 取得避開選項
         const avoidHwy = document.getElementById('avoidHighways').checked;
         const avoidToll = document.getElementById('avoidTolls').checked;
 
@@ -210,22 +210,20 @@
 
             if (status === 'OK') {
                 const element = response.rows[0].elements[0];
-                if (element.status === 'ZERO_RESULTS') {
-                    alert('找不到路徑，請確認地址或勾選條件是否合理');
+                if (element.status !== 'OK') {
+                    alert('無法計算路徑，請確認地址。');
                     return;
                 }
 
                 const distanceKm = element.distance.value / 1000;
                 const durationMin = Math.ceil(element.duration.value / 60);
 
-                // 計費邏輯
                 let baseFare = 80;
                 let distanceFare = distanceKm * 15;
                 let timeFare = durationMin * 3;
                 let extraFare = (distanceKm > 15) ? (distanceKm - 15) * 10 : 0;
                 const totalFare = Math.round(baseFare + distanceFare + timeFare + extraFare);
 
-                // 標記選項文字
                 let optionTag = "";
                 if(avoidHwy || avoidToll) {
                     optionTag = `(已避開: ${avoidHwy ? '高速公路 ' : ''}${avoidToll ? '收費路段' : ''})\n`;
@@ -233,12 +231,11 @@
 
                 const resultBox = document.getElementById('result');
                 const detailsText = document.getElementById('details-text');
-                
                 detailsText.innerText = `${optionTag}預估距離：${distanceKm.toFixed(1)} 公里\n預估時間：${durationMin} 分鐘\n--------------------\n預估總車資：$${totalFare} 元`;
                 resultBox.style.display = 'block';
                 resultBox.scrollIntoView({ behavior: 'smooth' });
             } else {
-                alert('系統錯誤: ' + status);
+                alert('API 錯誤: ' + status);
             }
         });
     }
@@ -250,12 +247,16 @@
         const disclaimer = "\n(※預估金額僅供參考，以司機實際報價為準)";
         const fullMsg = `【YihaoCar 預約行程】\n起點：${start}\n終點：${end}\n${details}${disclaimer}`;
 
-        navigator.clipboard.writeText(fullMsg).then(() => {
-            alert('行程資訊已複製！即將開啟 LINE');
-            window.location.href = "https://lin.ee/o8sVnUW"; 
-        }).catch(() => {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(fullMsg).then(() => {
+                alert('✅ 預約資訊已自動複製！\n\n請在開啟 LINE 後，於對話框「長按貼上」並傳送。');
+                window.location.href = "https://lin.ee/o8sVnUW"; 
+            }).catch(() => {
+                window.location.href = "https://lin.ee/o8sVnUW";
+            });
+        } else {
             window.location.href = "https://lin.ee/o8sVnUW";
-        });
+        }
     }
 </script>
 
