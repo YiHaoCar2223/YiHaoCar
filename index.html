@@ -42,6 +42,7 @@
         }
         .input-group {
             margin-bottom: 15px;
+            position: relative;
         }
         label {
             display: block;
@@ -52,10 +53,26 @@
         input[type="text"] {
             width: 100%;
             padding: 12px;
+            padding-right: 100px; /* 為「目前位置」按鈕留空間 */
             border: 2px solid #eee;
             border-radius: 10px;
             box-sizing: border-box;
             font-size: 16px;
+        }
+        /* 目前位置按鈕樣式 */
+        .btn-location {
+            position: absolute;
+            right: 8px;
+            bottom: 6px;
+            padding: 6px 12px;
+            background: #eef6ff;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            width: auto;
         }
         .options-group {
             display: flex;
@@ -134,6 +151,7 @@
     <div class="input-group">
         <label>📍 起點</label>
         <input type="text" id="start" placeholder="輸入地址或地標">
+        <button class="btn-location" onclick="getCurrentLocation()">📍 目前位置</button>
     </div>
     
     <div class="input-group">
@@ -180,6 +198,50 @@
         const options = { componentRestrictions: { country: "tw" } };
         autocompleteStart = new google.maps.places.Autocomplete(document.getElementById('start'), options);
         autocompleteEnd = new google.maps.places.Autocomplete(document.getElementById('end'), options);
+    }
+
+    // 新增：獲取目前位置函式
+    function getCurrentLocation() {
+        const startInput = document.getElementById('start');
+        const locBtn = document.querySelector('.btn-location');
+
+        if (!navigator.geolocation) {
+            alert('您的瀏覽器不支援定位功能');
+            return;
+        }
+
+        locBtn.innerText = '定位中...';
+        locBtn.disabled = true;
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                const latlng = { lat: lat, lng: lng };
+
+                // 使用 Geocoder 將座標轉換為地址
+                const geocoder = new google.maps.Geocoder();
+                geocoder.geocode({ location: latlng }, (results, status) => {
+                    locBtn.innerText = '📍 目前位置';
+                    locBtn.disabled = false;
+                    if (status === "OK") {
+                        if (results[0]) {
+                            startInput.value = results[0].formatted_address.replace('台灣', '');
+                        } else {
+                            alert("找不到地址");
+                        }
+                    } else {
+                        alert("定位失敗: " + status);
+                    }
+                });
+            },
+            (error) => {
+                locBtn.innerText = '📍 目前位置';
+                locBtn.disabled = false;
+                alert('定位失敗，請確保已開啟 GPS 並允許瀏覽器存取位置');
+            },
+            { enableHighAccuracy: true }
+        );
     }
 
     function calculateFare() {
@@ -264,5 +326,6 @@
 
 </body>
 </html>
+
 
 
