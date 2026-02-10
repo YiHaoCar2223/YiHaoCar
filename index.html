@@ -1,3 +1,17 @@
+這是一份為您整合後的完整程式碼。
+
+🌟 本次更新重點：
+路徑選項：新增「避開收費路段」與「避開高速公路」的切換開關，規劃行程時會自動套用。
+
+升級機制：
+
+新增「指定進口車 (隨機車款)」勾選框。
+
+智能提醒：當預估車資達 300 元以上且使用者未勾選進口車時，系統會自動跳出「✨ 預估車資已達標，升級進口車不加價！」的醒目提醒，並引導使用者勾選。
+
+複製訊息優化：訊息中會包含路徑偏好（如避開收費等）以及進口車升級的備註，讓您在 LINE 接單時資訊更完整。
+
+HTML
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -13,6 +27,7 @@
             --pure-white: #ffffff;
             --shadow-color: rgba(0, 45, 94, 0.08);
             --line-green: #06c755;
+            --gold: #b45309;
         }
 
         body {
@@ -31,11 +46,11 @@
             align-self: flex-start;
         }
 
-        .brand-zone { text-align: center; margin-bottom: 25px; }
+        .brand-zone { text-align: center; margin-bottom: 20px; }
         .brand-logo { font-size: 32px; font-weight: 900; color: var(--main-blue); margin: 0; letter-spacing: -0.5px; }
         .brand-tagline { font-size: 14px; font-weight: 400; color: var(--accent-silver); letter-spacing: 5px; margin-top: 5px; }
 
-        .form-group { margin-bottom: 18px; position: relative; }
+        .form-group { margin-bottom: 15px; position: relative; }
         .form-label { font-size: 12px; font-weight: 900; margin-bottom: 6px; display: block; color: var(--main-blue); opacity: 0.7; }
 
         .input-box {
@@ -52,9 +67,26 @@
             border: none; border-radius: 12px; font-size: 12px; font-weight: 700; cursor: pointer;
         }
 
+        /* 選項區塊樣式 */
+        .options-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;
+        }
+        .option-item {
+            background: #f8fafc; padding: 12px; border-radius: 15px;
+            display: flex; align-items: center; cursor: pointer;
+            border: 1px solid #edf2f7; transition: 0.2s;
+        }
+        .option-item input { margin-right: 10px; width: 18px; height: 18px; cursor: pointer; }
+        .option-item span { font-size: 13px; font-weight: 500; color: #4a5568; }
+        .option-item:hover { border-color: var(--main-blue); }
+
+        /* 進口車專屬樣式 */
+        .option-full { grid-column: span 2; background: #fffbeb; border: 1px solid #fef3c7; }
+        .option-full span { color: var(--gold); font-weight: 700; }
+
         #map {
-            width: 100%; height: 320px; 
-            border-radius: 25px; margin: 20px 0;
+            width: 100%; height: 300px; 
+            border-radius: 25px; margin: 15px 0;
             background: #e2e8f0; border: 1px solid #edf2f7;
         }
 
@@ -62,37 +94,37 @@
             width: 100%; background: var(--main-blue);
             color: white; padding: 18px;
             font-size: 18px; font-weight: 700; border: none; border-radius: 20px; cursor: pointer;
+            transition: 0.3s;
         }
+
+        /* 達標提醒用語 */
+        #upgrade-alert {
+            display: none; background: #fff4e5; color: #c2410c;
+            padding: 12px; border-radius: 15px; margin-bottom: 15px;
+            font-size: 13px; font-weight: 700; text-align: center;
+            border: 1px dashed #fdba74;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
         .result-panel {
             margin-top: 20px; padding: 25px; border-radius: 25px;
             background: #fdfdfd; border: 1px solid #edf2f7; 
             display: none; animation: slideUp 0.5s ease-out;
         }
-
         @keyframes slideUp { from { transform: translateY(15px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         .price-text { font-size: 42px; font-weight: 900; color: var(--main-blue); margin: 5px 0; letter-spacing: -1px; }
 
-        .upgrade-tag {
-            background: #fff8e1; color: #b45309; 
-            padding: 6px 14px; border-radius: 50px; 
-            font-size: 12px; font-weight: 700; 
-            display: inline-block; margin-bottom: 15px;
-            border: 1px solid #fef3c7;
-        }
-
         .final-disclaimer {
-            margin-top: 15px; padding-top: 15px;
-            border-top: 1px solid #f1f5f9;
-            font-size: 12px; color: #94a3b8;
-            line-height: 1.6; font-style: italic;
+            margin-top: 15px; padding-top: 15px; border-top: 1px solid #f1f5f9;
+            font-size: 12px; color: #94a3b8; line-height: 1.6; font-style: italic;
         }
 
         .btn-line {
             width: 100%; background: var(--line-green); color: white; padding: 16px;
             font-size: 17px; font-weight: 700; border: none; border-radius: 20px;
-            margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px;
+            margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer;
         }
     </style>
 </head>
@@ -115,19 +147,32 @@
         <input type="text" id="end" class="input-box" placeholder="請輸入目的地">
     </div>
 
+    <div class="options-grid">
+        <label class="option-item">
+            <input type="checkbox" id="avoidTolls"> <span>避開收費路段</span>
+        </label>
+        <label class="option-item">
+            <input type="checkbox" id="avoidHighways"> <span>避開高速公路</span>
+        </label>
+        <label class="option-item option-full">
+            <input type="checkbox" id="premiumCar"> <span>指定進口車 (隨機車款)</span>
+        </label>
+    </div>
+
     <div id="map"></div>
+
+    <div id="upgrade-alert">✨ 預估車資已達標，升級進口車不加價！</div>
 
     <button id="calc-btn" class="btn-calculate" onclick="calculateFare()">規劃行程</button>
 
     <div id="result" class="result-panel">
-        <div id="upgrade-promo" class="upgrade-tag" style="display: none;">✨ 已達標！指定進口車升級不加價</div>
         <div style="font-size:12px; color:var(--accent-silver); font-weight:700;">預估行程總金額</div>
         <div id="price-tag" class="price-text">$0</div>
         
         <div id="info-tag" style="font-size:14px; color:#4a5568; line-height:1.6; padding-top: 5px;"></div>
 
         <div class="final-disclaimer">
-            ※ 此金額為系統依路程初步試算，實際行程細節與車資將由專人聯繫確認。
+            ※ 此金額為系統依路程初步試算，實際行程細節將由專人聯繫確認。
         </div>
 
         <button class="btn-line" onclick="copyAndLine()">
@@ -184,7 +229,17 @@
         const end = document.getElementById('end').value;
         if (!start || !end) return alert('請填寫完整地點資訊');
 
-        directionsService.route({ origin: start, destination: end, travelMode: 'DRIVING' }, (result, status) => {
+        // 路徑偏好設定
+        const avoidTolls = document.getElementById('avoidTolls').checked;
+        const avoidHighways = document.getElementById('avoidHighways').checked;
+
+        directionsService.route({ 
+            origin: start, 
+            destination: end, 
+            travelMode: 'DRIVING',
+            avoidTolls: avoidTolls,
+            avoidHighways: avoidHighways
+        }, (result, status) => {
             if (status == 'OK') {
                 markerStart.setVisible(false); markerEnd.setVisible(false);
                 directionsRenderer.setDirections(result);
@@ -193,16 +248,26 @@
                 const dist = leg.distance.value / 1000;
                 const time = Math.ceil(leg.duration.value / 60);
                 
+                // 車資計算邏輯 (基本費 80 + 里程費 + 時間費 + 長途補貼)
                 currentTotal = Math.round(80 + (dist * 15) + (time * 3) + (dist > 15 ? (dist-15)*10 : 0));
 
                 document.getElementById('price-tag').innerText = `$${currentTotal.toLocaleString()}`;
                 document.getElementById('info-tag').innerText = `✨ 里程：${dist.toFixed(1)} km | ⏳ 車程：${time} 分鐘`;
                 
-                const promo = document.getElementById('upgrade-promo');
-                promo.style.display = currentTotal >= 300 ? 'inline-block' : 'none';
+                // 300元門檻邏輯
+                const alertBox = document.getElementById('upgrade-alert');
+                const premiumCheckbox = document.getElementById('premiumCar');
+                
+                if (currentTotal >= 300 && !premiumCheckbox.checked) {
+                    alertBox.style.display = 'block';
+                } else {
+                    alertBox.style.display = 'none';
+                }
 
                 document.getElementById('result').style.display = 'block';
                 document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+            } else {
+                alert('無法規劃此路線，請檢查偏好設定或地址是否正確。');
             }
         });
     }
@@ -221,15 +286,26 @@
     }
 
     function copyAndLine() {
-        let upgradeNote = currentTotal >= 300 ? "\n🌟 備註：指定進口 (隨機車款) / 升級不加價" : "";
+        const isAvoidTolls = document.getElementById('avoidTolls').checked ? " [避開收費]" : "";
+        const isAvoidHigh = document.getElementById('avoidHighways').checked ? " [避開高速]" : "";
+        const isPremium = document.getElementById('premiumCar').checked;
+        
+        let carTypeNote = isPremium ? "\n🌟 需求：指定進口車 (升級不加價)" : "";
+        if (currentTotal >= 300 && !isPremium) {
+            carTypeNote = "\n💡 提醒：金額已達標，可免費升級進口車 (請與客服確認)";
+        }
+
         const msg = `【YiHaoCar 尊榮派遣預約】
 起點：${document.getElementById('start').value}
 終點：${document.getElementById('end').value}
+路徑偏好：正常行駛${isAvoidTolls}${isAvoidHigh}
 預估車資：${document.getElementById('price-tag').innerText}
-行程明細：${document.getElementById('info-tag').innerText.replace(/\n/g, ' ')}${upgradeNote}`;
+行程明細：${document.getElementById('info-tag').innerText.replace(/\n/g, ' ')}${carTypeNote}
+---
+※ 此金額為系統初步試算。`;
 
         navigator.clipboard.writeText(msg).then(() => {
-            alert('行程資訊已複製！');
+            alert('行程資訊已複製！請前往 LINE 貼上預約。');
             window.location.href = "https://lin.ee/o8sVnUW";
         });
     }
@@ -239,5 +315,4 @@
 
 </body>
 </html>
-
 
