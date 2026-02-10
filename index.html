@@ -198,11 +198,7 @@
         markerStart = new google.maps.Marker({ map: map, visible: false, label: "起" });
         markerEnd = new google.maps.Marker({ map: map, visible: false, label: "終" });
         
-        const options = { 
-            componentRestrictions: { country: "tw" },
-            // 🚀 優化 1：限制搜尋結果類型為地址
-            types: ['address']
-        };
+        const options = { componentRestrictions: { country: "tw" } };
         
         autocompleteStart = new google.maps.places.Autocomplete(document.getElementById('start'), options);
         autocompleteEnd = new google.maps.places.Autocomplete(document.getElementById('end'), options);
@@ -325,3 +321,4 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
+
