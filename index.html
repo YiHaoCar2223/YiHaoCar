@@ -13,34 +13,73 @@
             --pure-white: #ffffff;
             --shadow-color: rgba(0, 45, 94, 0.08);
             --line-green: #06c755;
+            --gold: #b45309;
         }
 
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: var(--bg-light); margin: 0; padding: 15px; color: #2d3748; }
-        .main-card { background: var(--pure-white); width: 100%; max-width: 480px; padding: 30px 20px; border-radius: 40px; box-shadow: 0 30px 60px var(--shadow-color); margin: 0 auto; }
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: var(--bg-light);
+            margin: 0; padding: 15px; min-height: 100vh;
+            display: flex; justify-content: center;
+            color: #2d3748;
+        }
+
+        .main-card {
+            background: var(--pure-white);
+            width: 100%; max-width: 480px;
+            padding: 30px 20px; border-radius: 40px;
+            box-shadow: 0 30px 60px var(--shadow-color);
+            align-self: flex-start;
+        }
+
         .brand-zone { text-align: center; margin-bottom: 20px; }
-        .brand-logo { font-size: 32px; font-weight: 900; color: var(--main-blue); margin: 0; }
-        
-        .form-group { margin-bottom: 15px; }
+        .brand-logo { font-size: 32px; font-weight: 900; color: var(--main-blue); margin: 0; letter-spacing: -0.5px; }
+        .brand-tagline { font-size: 14px; font-weight: 400; color: var(--accent-silver); letter-spacing: 5px; margin-top: 5px; }
+
+        .form-group { margin-bottom: 15px; position: relative; }
         .form-label { font-size: 11px; font-weight: 900; margin-bottom: 6px; display: block; color: var(--main-blue); opacity: 0.7; }
-        .input-box { width: 100%; padding: 15px; border: 1px solid #edf2f7; border-radius: 18px; font-size: 15px; background: #f8fafc; box-sizing: border-box; }
-        
-        #booking-time-container { display: none; margin-top: 10px; }
+
+        .input-box {
+            width: 100%; padding: 15px 18px; 
+            border: 1px solid #edf2f7; border-radius: 18px; 
+            font-size: 15px; background: #f8fafc; 
+            color: #1a202c; box-sizing: border-box; transition: 0.3s;
+            font-family: inherit;
+        }
+        .input-box:focus { border-color: var(--main-blue); outline: none; background: white; box-shadow: 0 0 0 4px rgba(0, 45, 94, 0.05); }
+
+        #booking-time-container {
+            display: none;
+            margin-top: 10px;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
         .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .option-item { background: #f8fafc; padding: 12px; border-radius: 15px; display: flex; align-items: center; cursor: pointer; border: 1px solid #edf2f7; }
-        .option-item input { margin-right: 8px; width: 18px; height: 18px; }
+        .option-item {
+            background: #f8fafc; padding: 12px; border-radius: 15px;
+            display: flex; align-items: center; cursor: pointer;
+            border: 1px solid #edf2f7; transition: 0.2s;
+        }
+        .option-item input { margin-right: 10px; width: 18px; height: 18px; }
+        .option-item span { font-size: 13px; font-weight: 500; color: #4a5568; }
         .option-full { grid-column: span 2; }
+        .option-premium { background: #fffbeb; border: 1px solid #fef3c7; }
+        .option-premium span { color: var(--gold); font-weight: 700; }
+        .option-booking { background: #eef2ff; border: 1px solid #e0e7ff; }
+        .option-booking span { color: #4338ca; font-weight: 700; }
 
-        #map { width: 100%; height: 260px; border-radius: 25px; margin: 15px 0; background: #e2e8f0; }
-        .btn-calculate { width: 100%; background: var(--main-blue); color: white; padding: 18px; font-size: 18px; font-weight: 700; border: none; border-radius: 20px; cursor: pointer; }
+        #map { width: 100%; height: 260px; border-radius: 25px; margin: 15px 0; background: #e2e8f0; border: 1px solid #edf2f7; }
 
-        /* 結果顯示 */
+        .btn-calculate { width: 100%; background: var(--main-blue); color: white; padding: 18px; font-size: 18px; font-weight: 700; border: none; border-radius: 20px; cursor: pointer; margin-bottom: 20px; transition: 0.3s; }
+        .btn-calculate:disabled { background: var(--accent-silver); cursor: not-allowed; opacity: 0.6; }
+
         .result-panel { margin-top: 20px; padding: 25px; border-radius: 30px; background: #ffffff; border: 2px solid var(--main-blue); display: none; }
         .detail-card { background: #f8fafc; padding: 15px; border-radius: 20px; margin: 15px 0; border: 1px solid #e2e8f0; }
-        .detail-line { display: flex; justify-content: space-between; font-size: 14px; color: #4a5568; margin-bottom: 8px; }
+        .detail-line { display: flex; justify-content: space-between; font-size: 13px; color: #4a5568; margin-bottom: 8px; }
         .detail-line b { color: #1a202c; font-weight: 700; }
-        .highlight-line { color: var(--main-blue); font-weight: 900; border-bottom: 1px dashed #cbd5e1; padding-bottom: 5px; margin-bottom: 10px; }
         .total-row { border-top: 2px solid #cbd5e1; padding-top: 10px; margin-top: 10px; }
-        .price-text { font-size: 42px; font-weight: 900; color: var(--main-blue); }
+        .price-text { font-size: 46px; font-weight: 900; color: var(--main-blue); letter-spacing: -2px; }
 
         .btn-line { width: 100%; background: var(--line-green); color: white; padding: 16px; font-size: 17px; font-weight: 700; border: none; border-radius: 20px; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; }
     </style>
@@ -50,11 +89,12 @@
 <div class="main-card">
     <div class="brand-zone">
         <h1 class="brand-logo">YiHaoCar</h1>
+        <div class="brand-tagline">尊榮座駕派遣</div>
     </div>
 
     <div class="form-group">
         <label class="form-label">起點 Starting Point</label>
-        <input type="text" id="start" class="input-box" placeholder="地標、店名或地址">
+        <input type="text" id="start" class="input-box" placeholder="輸入出發地址">
     </div>
 
     <div class="form-group">
@@ -63,70 +103,116 @@
     </div>
 
     <div class="options-grid">
-        <label class="option-item option-full" style="background: #eef2ff;">
+        <label class="option-item option-full option-booking">
             <input type="checkbox" id="enableBooking" onchange="toggleBookingTime()"> 
-            <span>📅 預約行程 (自訂時間)</span>
+            <span>📅 預約行程 (預約用，非即時)</span>
         </label>
         <div id="booking-time-container" class="form-group option-full">
             <input type="datetime-local" id="pickupTime" class="input-box">
         </div>
         
-        <label class="option-item"><input type="checkbox" id="avoidTolls"> <span>避開過路費</span></label>
+        <label class="option-item"><input type="checkbox" id="avoidTolls"> <span>避開收費</span></label>
         <label class="option-item"><input type="checkbox" id="avoidHighways"> <span>避開高速</span></label>
+        <label class="option-item option-full option-premium">
+            <input type="checkbox" id="premiumCar"> <span>指定進口車 (隨機車款)</span>
+        </label>
     </div>
 
     <div id="map"></div>
-    <button id="calc-btn" class="btn-calculate" onclick="calculateFare()">開始試算費用</button>
+    <div id="upgrade-alert" style="display:none; background:#fff4e5; color:#c2410c; padding:12px; border-radius:15px; margin-bottom:15px; font-size:13px; font-weight:700; text-align:center; border:1px dashed #fdba74;">✨ 預估車資已達標，升級進口車不加價！</div>
+    
+    <button id="calc-btn" class="btn-calculate" onclick="calculateFare()">規劃行程並試算費用</button>
 
     <div id="result" class="result-panel">
         <div class="detail-card">
-            <div class="detail-line highlight-line"><span>總行程里程</span><b id="res-dist">- km</b></div>
-            <div class="detail-line highlight-line"><span>預估行車時間</span><b id="res-time">- min</b></div>
-            
-            <div class="detail-line"><span>基本里程費 ($15/km)</span><b id="dist-fee">$0</b></div>
-            <div class="detail-line" style="color:#e53e3e;"><span>長途附加費 (逾15km)</span><b id="long-fee">$0</b></div>
-            <div class="detail-line"><span>行車時間費 ($3/min)</span><b id="time-fee">$0</b></div>
+            <div class="detail-line"><span>需求類別</span><b id="display-type">即時出發</b></div>
+            <div class="detail-line" id="res-time-row" style="display:none;"><span>預約時間</span><b id="display-time">-</b></div>
+            <div class="detail-line"><span>里程費用</span><b id="dist-fee">$0</b></div>
+            <div class="detail-line"><span>長途附加</span><b id="long-fee">$0</b></div>
+            <div class="detail-line"><span>行車時間</span><b id="time-fee">$0</b></div>
             <div class="detail-line"><span>起步價</span><b>$100</b></div>
-            
             <div class="detail-line total-row">
-                <span style="font-weight:900; color:var(--main-blue);">總預估金額 (去尾數)</span>
+                <span style="font-weight:900; color:var(--main-blue);">總計 (去尾數)</span>
                 <span id="price-tag" class="price-text">$0</span>
             </div>
         </div>
-        
         <button class="btn-line" onclick="copyAndLine()">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" width="20"> 複製資訊並前往 LINE
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" width="20"> 複製資訊並預約
         </button>
     </div>
 </div>
 
 <script>
     let map, directionsService, directionsRenderer;
-    let autocompleteStart, autocompleteEnd;
+    let markerStart, markerEnd, autocompleteStart, autocompleteEnd;
     let currentTotal = 0;
-    let finalDist = 0;
-    let finalTime = 0;
+    let detailMsg = "";
 
     function toggleBookingTime() {
+        const container = document.getElementById('booking-time-container');
         document.getElementById('booking-time-container').style.display = document.getElementById('enableBooking').checked ? 'block' : 'none';
+        if(document.getElementById('enableBooking').checked) document.getElementById('pickupTime').value = "";
     }
 
-    function initMap() {
+    // 🚀 使用 2026 最新標準加載地圖
+    async function initMap() {
+        const { Map } = await google.maps.importLibrary("maps");
+        const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+        const { Autocomplete } = await google.maps.importLibrary("places");
+
         directionsService = new google.maps.DirectionsService();
-        directionsRenderer = new google.maps.DirectionsRenderer({ polylineOptions: { strokeColor: "#002d5e", strokeWeight: 6 } });
-        map = new google.maps.Map(document.getElementById("map"), { zoom: 13, center: { lat: 24.1477, lng: 120.6736 }, disableDefaultUI: true });
+        directionsRenderer = new google.maps.DirectionsRenderer({ 
+            polylineOptions: { strokeColor: "#002d5e", strokeWeight: 6 },
+            suppressMarkers: true // 我們手動使用新版進階標記
+        });
+
+        map = new Map(document.getElementById("map"), {
+            zoom: 13,
+            center: { lat: 24.1477, lng: 120.6736 },
+            mapId: "DEMO_MAP_ID", // 進階標記必備
+            disableDefaultUI: true,
+            zoomControl: true
+        });
+
         directionsRenderer.setMap(map);
 
-        // 🚀 修改點：移除 types 限制，允許搜尋地標
-        const options = { componentRestrictions: { country: "tw" }, fields: ["geometry", "formatted_address", "name"] };
-        autocompleteStart = new google.maps.places.Autocomplete(document.getElementById('start'), options);
-        autocompleteEnd = new google.maps.places.Autocomplete(document.getElementById('end'), options);
+        // 新版進階標記
+        markerStart = new AdvancedMarkerElement({ map, title: "起點" });
+        markerEnd = new AdvancedMarkerElement({ map, title: "終點" });
+
+        const options = { componentRestrictions: { country: "tw" }, fields: ["geometry", "formatted_address"], types: ["address"] };
+        autocompleteStart = new Autocomplete(document.getElementById('start'), options);
+        autocompleteEnd = new Autocomplete(document.getElementById('end'), options);
+
+        autocompleteStart.addListener('place_changed', () => {
+            const place = autocompleteStart.getPlace();
+            if (place.geometry) {
+                map.panTo(place.geometry.location);
+                markerStart.position = place.geometry.location;
+            }
+        });
+
+        autocompleteEnd.addListener('place_changed', () => {
+            const place = autocompleteEnd.getPlace();
+            if (place.geometry) {
+                map.panTo(place.geometry.location);
+                markerEnd.position = place.geometry.location;
+            }
+        });
     }
 
     function calculateFare() {
         const start = document.getElementById('start').value;
         const end = document.getElementById('end').value;
-        if (!start || !end) return alert('請輸入完整起點與終點地址');
+        const isBooking = document.getElementById('enableBooking').checked;
+        const bookingTime = document.getElementById('pickupTime').value;
+        const btn = document.getElementById('calc-btn');
+
+        if (!start || !end) return alert('請填寫完整地址');
+        if (isBooking && !bookingTime) return alert('請輸入預約時間');
+
+        btn.disabled = true;
+        btn.innerText = "計算中...";
 
         directionsService.route({
             origin: start,
@@ -135,42 +221,38 @@
             avoidTolls: document.getElementById('avoidTolls').checked,
             avoidHighways: document.getElementById('avoidHighways').checked
         }, (result, status) => {
+            btn.disabled = false;
+            btn.innerText = "規劃行程並試算費用";
+            
             if (status === 'OK') {
                 directionsRenderer.setDirections(result);
                 const leg = result.routes[0].legs[0];
-                
-                // 🚀 正確抓取公里數與時間
-                finalDist = leg.distance.value / 1000; // 公里
-                finalTime = Math.ceil(leg.duration.value / 60); // 分鐘
+                markerStart.position = leg.start_location;
+                markerEnd.position = leg.end_location;
 
-                // 邏輯計算
-                let baseDistFee = Math.round(finalDist * 15);
+                const dist = leg.distance.value / 1000;
+                const time = Math.ceil(leg.duration.value / 60);
                 
-                // 🚀 長途附加邏輯修正：超過 15km 的部分每公里加 10 元
-                let longDistFee = 0;
-                if (finalDist > 15) {
-                    longDistFee = Math.round((finalDist - 15) * 10);
-                }
-
-                let timeFee = finalTime * 3;
+                let baseDistFee = Math.round(dist * 15);
+                let longDistFee = dist > 15 ? Math.round((dist - 15) * 10) : 0;
+                let timeFee = time * 3;
                 let startFee = 100;
 
-                // 總金額與去尾數
-                let rawTotal = baseDistFee + longDistFee + timeFee + startFee;
-                currentTotal = Math.floor(rawTotal / 10) * 10;
+                currentTotal = Math.floor((baseDistFee + longDistFee + timeFee + startFee) / 10) * 10;
 
-                // 更新介面
-                document.getElementById('res-dist').innerText = finalDist.toFixed(1) + " km";
-                document.getElementById('res-time').innerText = finalTime + " 分鐘";
-                document.getElementById('dist-fee').innerText = "$" + baseDistFee;
-                document.getElementById('long-fee').innerText = "$" + longDistFee;
-                document.getElementById('time-fee').innerText = "$" + timeFee;
-                document.getElementById('price-tag').innerText = "$" + currentTotal;
+                document.getElementById('display-type').innerText = isBooking ? "預約行程" : "即時出發";
+                document.getElementById('res-time-row').style.display = isBooking ? 'flex' : 'none';
+                if(isBooking) document.getElementById('display-time').innerText = bookingTime.replace('T', ' ');
 
+                document.getElementById('dist-fee').innerText = `$${baseDistFee}`;
+                document.getElementById('long-fee').innerText = `$${longDistFee}`;
+                document.getElementById('time-fee').innerText = `$${timeFee}`;
+                document.getElementById('price-tag').innerText = `$${currentTotal}`;
+                detailMsg = `里程費$${baseDistFee} + 長途費$${longDistFee} + 時間費$${timeFee} + 起步$100`;
+
+                document.getElementById('upgrade-alert').style.display = (currentTotal >= 300 && !document.getElementById('premiumCar').checked) ? 'block' : 'none';
                 document.getElementById('result').style.display = 'block';
                 document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
-            } else {
-                alert('無法規劃路徑，請確認地址是否精確。');
             }
         });
     }
@@ -178,10 +260,9 @@
     function copyAndLine() {
         const isBooking = document.getElementById('enableBooking').checked;
         const bookingTime = isBooking ? document.getElementById('pickupTime').value.replace('T', ' ') : "即時出發";
-        const msg = `【YiHaoCar 預約行程】\n預約時間：${bookingTime}\n起點：${document.getElementById('start').value}\n終點：${document.getElementById('end').value}\n里程：${finalDist.toFixed(1)} km\n時間：${finalTime} min\n預估金額：$${currentTotal}\n---\n系統自動試算，實際依司機端為主。`;
-        
+        const msg = `【YiHaoCar 尊榮派遣】\n預約時間：${bookingTime}\n起點：${document.getElementById('start').value}\n終點：${document.getElementById('end').value}\n預估車資：$${currentTotal}\n費用明細：${detailMsg}`;
         navigator.clipboard.writeText(msg).then(() => {
-            alert('行程資訊已複製！');
+            alert('資訊已複製！');
             window.location.href = "https://lin.ee/o8sVnUW";
         });
     }
@@ -191,3 +272,4 @@
 
 </body>
 </html>
+
