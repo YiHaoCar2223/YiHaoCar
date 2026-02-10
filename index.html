@@ -22,7 +22,7 @@
             display: flex;
             justify-content: center;
             min-height: 100vh;
-            padding: 15px; /* 手機端縮小間距 */
+            padding: 15px;
             box-sizing: border-box;
         }
 
@@ -30,10 +30,10 @@
             background: var(--glass-bg);
             width: 100%;
             max-width: 480px;
-            padding: 30px 20px; /* 手機端增加左右餘裕 */
+            padding: 30px 20px;
             border-radius: 30px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            align-self: flex-start; /* 確保長內容在手機上可捲動 */
+            align-self: flex-start;
             margin-top: 10px;
         }
 
@@ -73,33 +73,30 @@
             color: #4a5568;
         }
 
-        /* 關鍵修正：優化輸入框空間 */
         .input-box {
             width: 100%;
             padding: 14px 15px;
-            padding-right: 85px; /* 為定位按鈕留出適當空間 */
+            padding-right: 85px; 
             border: 2px solid #edf2f7;
             border-radius: 14px;
-            font-size: 15px; /* 稍微縮小字體以顯示更多內容 */
+            font-size: 15px;
             background: #f8fafc;
             transition: 0.3s;
             box-sizing: border-box;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis; /* 當文字過長時顯示省略號，點擊後可左右滑動看完整地址 */
         }
 
         .input-box:focus {
             border-color: var(--primary);
             background: #fff;
             outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1);
         }
 
         .btn-location {
             position: absolute;
             right: 8px;
             bottom: 6px;
-            padding: 8px 10px;
+            padding: 8px 12px;
             background: var(--primary-light);
             color: var(--primary);
             border: none;
@@ -107,6 +104,11 @@
             font-size: 12px;
             font-weight: 700;
             cursor: pointer;
+            z-index: 5;
+        }
+
+        .btn-location:disabled {
+            opacity: 0.6;
         }
 
         .options-row {
@@ -141,7 +143,10 @@
             border-radius: 16px;
             cursor: pointer;
             box-shadow: 0 10px 20px rgba(0, 86, 179, 0.15);
+            transition: 0.3s;
         }
+
+        .btn-calculate:hover { background: #004494; }
 
         .result-panel {
             margin-top: 25px;
@@ -150,6 +155,12 @@
             border-radius: 20px;
             border: 1px solid #e1e9f5;
             display: none;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .result-price {
@@ -184,12 +195,11 @@
             line-height: 1.5;
         }
 
-        /* 針對手機端的下拉選單寬度優化 */
         .pac-container {
-            width: auto !important;
-            max-width: 90% !important;
-            left: 5% !important;
             border-radius: 12px;
+            border: none;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            margin-top: 5px;
         }
     </style>
 </head>
@@ -203,7 +213,7 @@
 
     <div class="form-group">
         <label class="form-label">📍 乘車起點</label>
-        <input type="text" id="start" class="input-box" placeholder="輸入地址或定位">
+        <input type="text" id="start" class="input-box" placeholder="輸入地址或點擊定位">
         <button class="btn-location" onclick="getCurrentLocation()">📍 定位</button>
     </div>
 
@@ -226,7 +236,7 @@
     <div id="result" class="result-panel">
         <div style="font-size:13px; color:#718096; font-weight:700;">預估行程總金額</div>
         <div id="price-tag" class="result-price">$0</div>
-        <div id="info-tag" style="font-size:14px; white-space: pre-line; color:#4a5568;"></div>
+        <div id="info-tag" style="font-size:14px; white-space: pre-line; color:#4a5568; line-height: 1.6;"></div>
         
         <button class="btn-line" onclick="copyAndLine()">
             <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" width="20" alt="LINE">
@@ -249,20 +259,43 @@
         autocompleteEnd = new google.maps.places.Autocomplete(document.getElementById('end'), options);
     }
 
+    // 高精準定位優化函式
     function getCurrentLocation() {
         const btn = document.querySelector('.btn-location');
-        if (!navigator.geolocation) return alert('不支援定位');
-        btn.innerText = '中...';
+        const startInput = document.getElementById('start');
+
+        if (!navigator.geolocation) return alert('您的瀏覽器不支援定位功能');
+        
+        btn.innerText = '精確定位中...';
+        btn.disabled = true;
+
         navigator.geolocation.getCurrentPosition(
             (pos) => {
                 const latlng = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-                new google.maps.Geocoder().geocode({ location: latlng }, (res, status) => {
+                const geocoder = new google.maps.Geocoder();
+                
+                geocoder.geocode({ location: latlng }, (res, status) => {
                     btn.innerText = '📍 定位';
-                    if (status === "OK") document.getElementById('start').value = res[0].formatted_address.replace('台灣', '').trim();
+                    btn.disabled = false;
+                    if (status === "OK" && res[0]) {
+                        // 移除「台灣」字樣，並取得最精確門牌地址
+                        let address = res[0].formatted_address.replace('台灣', '').trim();
+                        startInput.value = address;
+                    } else {
+                        alert('無法取得詳細地址，請手動微調輸入');
+                    }
                 });
             },
-            () => { btn.innerText = '📍 定位'; alert('請開啟權限'); },
-            { enableHighAccuracy: true, timeout: 8000 }
+            (err) => {
+                btn.innerText = '📍 定位';
+                btn.disabled = false;
+                alert('定位失敗：請確保手機 GPS 已開啟，並授權瀏覽器位置權限');
+            },
+            { 
+                enableHighAccuracy: true, // 開啟 GPS 衛星定位
+                timeout: 10000, 
+                maximumAge: 0 
+            }
         );
     }
 
@@ -271,44 +304,63 @@
         const end = document.getElementById('end').value;
         const hwy = document.getElementById('avoidHighways').checked;
         const toll = document.getElementById('avoidTolls').checked;
+        const btn = document.getElementById('calc-btn');
 
-        if (!start || !end) return alert('請填寫地點');
-        document.getElementById('calc-btn').innerText = '計算中...';
+        if (!start || !end) return alert('請填寫完整行程地點');
+
+        btn.innerText = '計算路徑中...';
+        btn.disabled = true;
 
         const service = new google.maps.DistanceMatrixService();
         service.getDistanceMatrix({
             origins: [start], destinations: [end],
             travelMode: 'DRIVING', avoidHighways: hwy, avoidTolls: toll
         }, (response, status) => {
-            document.getElementById('calc-btn').innerText = '開始試算車資';
+            btn.innerText = '開始試算車資';
+            btn.disabled = false;
+
             if (status === 'OK') {
                 const data = response.rows[0].elements[0];
-                if (data.status !== 'OK') return alert('地址不夠精確，請重新選擇');
+                if (data.status !== 'OK') return alert('查無路徑，請確認地址精確度');
 
                 const dist = data.distance.value / 1000;
                 const time = Math.ceil(data.duration.value / 60);
-                const total = Math.round(80 + (dist * 15) + (time * 3) + (dist > 15 ? (dist-15)*10 : 0));
+                
+                // YiHaoCar 公式邏輯
+                const base = 80;
+                const distFee = dist * 15;
+                const timeFee = time * 3;
+                const extraFee = dist > 15 ? (dist - 15) * 10 : 0;
+                const total = Math.round(base + distFee + timeFee + extraFee);
 
                 document.getElementById('price-tag').innerText = `$${total.toLocaleString()}`;
-                document.getElementById('info-tag').innerText = `里程：${dist.toFixed(1)} km | 車程：${time} min\n設定：${hwy ? '避開高速 ' : ''}${toll ? '避開收費' : '最速路徑'}`;
-                document.getElementById('result').style.display = 'block';
+                document.getElementById('info-tag').innerText = `里程：${dist.toFixed(1)} 公里\n車程：${time} 分鐘\n路徑：${hwy ? '已避開高速公路 ' : ''}${toll ? '已避開收費路段' : '系統最速路徑'}`;
+                
+                const resultPanel = document.getElementById('result');
+                resultPanel.style.display = 'block';
+                resultPanel.scrollIntoView({ behavior: 'smooth' });
             }
         });
     }
 
     function copyAndLine() {
-        const msg = `【YiHaoCar 行程預約】\n📍 起點：${document.getElementById('start').value}\n🏁 終點：${document.getElementById('end').value}\n📊 ${document.getElementById('info-tag').innerText.replace('|', '\n')}\n💵 預估總車資：${document.getElementById('price-tag').innerText}`;
+        const start = document.getElementById('start').value;
+        const end = document.getElementById('end').value;
+        const price = document.getElementById('price-tag').innerText;
+        const info = document.getElementById('info-tag').innerText;
+        
+        const msg = `【YiHaoCar 行程預約】\n📍 起點：${start}\n🏁 終點：${end}\n📊 ${info.replace(/\n/g, ' | ')}\n💵 預估總車資：${price}\n(※請貼上此訊息後傳送，司機將儘速聯繫您)`;
 
         navigator.clipboard.writeText(msg).then(() => {
-            alert('✅ 行程已複製！\n開啟 LINE 後貼上訊息即可。');
+            alert('✅ 預約資訊已複製！\n開啟 LINE 後直接「貼上」即可預約。');
+            window.location.href = "https://lin.ee/o8sVnUW";
+        }).catch(() => {
             window.location.href = "https://lin.ee/o8sVnUW";
         });
     }
 </script>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initService&language=zh-TW" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?keyAIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initService&language=zh-TW" async defer></script>
 
 </body>
 </html>
-        .disclaimer {
-            font-size: 11
