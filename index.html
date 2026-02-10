@@ -146,6 +146,11 @@
         <div class="detail-card">
             <div class="detail-line"><span>需求類別</span><b id="display-type">即時出發</b></div>
             <div class="detail-line" id="res-time-row" style="display:none;"><span>預約時間</span><b id="display-time">-</b></div>
+            
+            <div class="detail-line"><span>預估路程</span><b id="display-dist">0 km</b></div>
+            <div class="detail-line"><span>預估時間</span><b id="display-duration">0 min</b></div>
+            <hr style="border:0; border-top:1px dashed #edf2f7; margin:10px 0;">
+
             <div class="detail-line"><span>里程費用</span><b id="dist-fee">$0</b></div>
             <div class="detail-line"><span>長途附加</span><b id="long-fee">$0</b></div>
             <div class="detail-line"><span>行車時間</span><b id="time-fee">$0</b></div>
@@ -168,6 +173,8 @@
     let markerStart, markerEnd, autocompleteStart, autocompleteEnd;
     let currentTotal = 0;
     let detailMsg = "";
+    let finalDist = 0;
+    let finalTime = 0;
 
     function toggleBookingTime() {
         const container = document.getElementById('booking-time-container');
@@ -203,8 +210,6 @@
         autocompleteStart = new google.maps.places.Autocomplete(document.getElementById('start'), options);
         autocompleteEnd = new google.maps.places.Autocomplete(document.getElementById('end'), options);
 
-        // 🚀 優化 2：限制回傳欄位 (Fields Restriction)
-        // 只拿座標 (geometry) 和地址名稱 (name)，不拿餐廳評論或電話，費用大幅降低
         autocompleteStart.setFields(['geometry', 'formatted_address']);
         autocompleteEnd.setFields(['geometry', 'formatted_address']);
         
@@ -235,7 +240,6 @@
         if (!start || !end) return alert('請填寫完整地址');
         if (isBooking && !bookingTime) return alert('請輸入預約日期與時間');
         
-        // 🚀 優化 3：防抖鎖定 (防止瘋狂重複點擊浪費 API 次數)
         btn.disabled = true;
         btn.innerText = "計算中...";
 
@@ -246,7 +250,6 @@
             avoidTolls: document.getElementById('avoidTolls').checked, 
             avoidHighways: document.getElementById('avoidHighways').checked 
         }, (result, status) => {
-            // 解鎖按鈕
             btn.disabled = false;
             btn.innerText = "規劃行程並試算費用";
 
@@ -254,17 +257,26 @@
                 markerStart.setVisible(false); markerEnd.setVisible(false);
                 directionsRenderer.setDirections(result);
                 const leg = result.routes[0].legs[0];
-                const dist = leg.distance.value / 1000;
-                const time = Math.ceil(leg.duration.value / 60);
                 
-                let baseDistFee = Math.round(dist * 15);
-                let longDistFee = dist > 15 ? Math.round((dist - 15) * 10) : 0;
-                let timeFee = time * 3;
+                // 1. 取得公里數與分鐘
+                finalDist = leg.distance.value / 1000;
+                finalTime = Math.ceil(leg.duration.value / 60);
+                
+                // 2. 顯示預估路程資訊
+                document.getElementById('display-dist').innerText = finalDist.toFixed(1) + " km";
+                document.getElementById('display-duration').innerText = finalTime + " min";
+
+                // 3. 費用計算
+                let baseDistFee = Math.round(finalDist * 15);
+                // 長途附加費：使用 Math.round 確保不含小數點
+                let longDistFee = finalDist > 15 ? Math.round((finalDist - 15) * 10) : 0;
+                let timeFee = finalTime * 3;
                 let startFee = 100;
 
                 let rawTotal = baseDistFee + longDistFee + timeFee + startFee;
                 currentTotal = Math.floor(rawTotal / 10) * 10;
 
+                // 4. 更新介面
                 document.getElementById('display-type').innerText = isBooking ? "預約行程" : "即時出發";
                 const timeRow = document.getElementById('res-time-row');
                 if (isBooking) {
@@ -279,7 +291,7 @@
                 document.getElementById('time-fee').innerText = `$${timeFee}`;
                 document.getElementById('price-tag').innerText = `$${currentTotal}`;
 
-                detailMsg = `里程費$${baseDistFee} + 長途費$${longDistFee} + 時間費$${timeFee} + 起步$100`;
+                detailMsg = `${finalDist.toFixed(1)}km/${finalTime}min | 里程$${baseDistFee}+長途$${longDistFee}+時間$${timeFee}+起步$100`;
 
                 const alertBox = document.getElementById('upgrade-alert');
                 const premiumCheckbox = document.getElementById('premiumCar');
@@ -306,6 +318,7 @@
 預約時間：${bookingTime}
 起點：${document.getElementById('start').value}
 終點：${document.getElementById('end').value}
+路程資訊：${finalDist.toFixed(1)} km / ${finalTime} min
 預估車資：$${currentTotal} (已去尾數)
 費用明細：${detailMsg}${carNote}
 ---
@@ -321,5 +334,6 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
+
 
 
