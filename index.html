@@ -175,24 +175,43 @@
         
         if (checkbox.checked) {
             container.style.display = 'block';
-            timeInput.value = ""; // 🚀 移除自動填入，讓客戶自行輸入
+            timeInput.value = ""; 
         } else {
             container.style.display = 'none';
         }
     }
 
+    // ✨ 修正後的 initMap 邏輯
     function initMap() {
         directionsService = new google.maps.DirectionsService();
-        directionsRenderer = new directionsRenderer || new google.maps.DirectionsRenderer({ polylineOptions: { strokeColor: "#002d5e", strokeWeight: 6 } });
-        map = new google.maps.Map(document.getElementById("map"), { zoom: 13, center: { lat: 24.1477, lng: 120.6736 }, disableDefaultUI: true, zoomControl: true });
+        directionsRenderer = new google.maps.DirectionsRenderer({ 
+            polylineOptions: { strokeColor: "#002d5e", strokeWeight: 6 } 
+        });
+        
+        map = new google.maps.Map(document.getElementById("map"), { 
+            zoom: 13, 
+            center: { lat: 24.1477, lng: 120.6736 }, 
+            disableDefaultUI: true, 
+            zoomControl: true 
+        });
+        
         directionsRenderer.setMap(map);
+        
         markerStart = new google.maps.Marker({ map: map, visible: false, label: "起" });
         markerEnd = new google.maps.Marker({ map: map, visible: false, label: "終" });
+        
         const options = { componentRestrictions: { country: "tw" } };
         autocompleteStart = new google.maps.places.Autocomplete(document.getElementById('start'), options);
         autocompleteEnd = new google.maps.places.Autocomplete(document.getElementById('end'), options);
-        autocompleteStart.addListener('place_changed', () => { const place = autocompleteStart.getPlace(); if (place.geometry) updateMapFocus(place.geometry.location, 'start'); });
-        autocompleteEnd.addListener('place_changed', () => { const place = autocompleteEnd.getPlace(); if (place.geometry) updateMapFocus(place.geometry.location, 'end'); });
+        
+        autocompleteStart.addListener('place_changed', () => { 
+            const place = autocompleteStart.getPlace(); 
+            if (place.geometry) updateMapFocus(place.geometry.location, 'start'); 
+        });
+        autocompleteEnd.addListener('place_changed', () => { 
+            const place = autocompleteEnd.getPlace(); 
+            if (place.geometry) updateMapFocus(place.geometry.location, 'end'); 
+        });
     }
 
     function updateMapFocus(latlng, type) {
@@ -209,7 +228,7 @@
         const bookingTime = document.getElementById('pickupTime').value;
 
         if (!start || !end) return alert('請填寫完整地址');
-        if (isBooking && !bookingTime) return alert('請輸入預約日期與時間'); // 🚀 強化輸入提醒
+        if (isBooking && !bookingTime) return alert('請輸入預約日期與時間');
         
         directionsService.route({ 
             origin: start, 
@@ -288,4 +307,3 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
-
