@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YihaoCar 專業車資預估系統 </title>
+    <title>YihaoCar 專業車資預估系統</title>
     <style>
         :root {
             --primary-color: #0056b3;
-            --accent-color: #ff9800;
             --bg-color: #f8f9fa;
             --danger-color: #d32f2f;
         }
@@ -26,22 +25,22 @@
             padding: 30px;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            text-align: center;
         }
         .brand-header {
             font-size: 28px;
             font-weight: 800;
             color: var(--primary-color);
-            margin-bottom: 5px;
+            text-align: center;
             text-transform: uppercase;
+            margin-bottom: 5px;
         }
         .sub-header {
             font-size: 14px;
             color: #666;
+            text-align: center;
             margin-bottom: 25px;
         }
         .input-group {
-            text-align: left;
             margin-bottom: 18px;
         }
         label {
@@ -57,11 +56,6 @@
             border-radius: 10px;
             box-sizing: border-box;
             font-size: 16px;
-            transition: 0.3s;
-        }
-        input[type="text"]:focus {
-            border-color: var(--primary-color);
-            outline: none;
         }
         button {
             width: 100%;
@@ -71,33 +65,21 @@
             cursor: pointer;
             font-size: 18px;
             font-weight: bold;
-            margin-top: 10px;
             transition: 0.3s;
         }
         .btn-calc {
             background-color: var(--primary-color);
             color: white;
+            margin-top: 10px;
         }
-        .btn-calc:disabled {
-            background-color: #ccc;
-        }
-        .btn-line {
-            background-color: #00b900;
-            color: white;
-            margin-top: 15px;
-        }
+        .btn-calc:disabled { background-color: #ccc; }
         .result-box {
             margin-top: 25px;
             padding: 20px;
             background: #eef6ff;
             border-radius: 12px;
             display: none;
-            text-align: left;
             border-left: 5px solid var(--primary-color);
-        }
-        .result-box h3 {
-            margin-top: 0;
-            color: var(--primary-color);
         }
         .disclaimer-text {
             font-size: 13px;
@@ -107,25 +89,21 @@
             border-radius: 8px;
             border: 1px dashed var(--danger-color);
             margin: 15px 0;
-            line-height: 1.5;
+        }
+        .btn-line {
+            background-color: #00b900;
+            color: white;
         }
         .footer-note {
             font-size: 12px;
             color: #888;
             margin-top: 25px;
-            line-height: 1.6;
-            text-align: left;
             background: #f1f1f1;
             padding: 10px;
             border-radius: 5px;
         }
-        /* 修復 Google 地址下拉選單的層級 */
-        .pac-container {
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border: none;
-            margin-top: 5px;
-        }
+        /* 修正 Google 下拉選單在手機上的顯示 */
+        .pac-container { z-index: 9999 !important; border-radius: 8px; }
     </style>
 </head>
 <body>
@@ -147,7 +125,7 @@
     <button id="calc-btn" class="btn-calc" onclick="calculateFare()">開始試算車資</button>
     
     <div id="result" class="result-box">
-        <h3>試算結果</h3>
+        <h3 style="margin-top:0; color:var(--primary-color)">試算結果</h3>
         <p id="details-text" style="white-space: pre-line; color: #333; line-height: 1.6;"></p>
         
         <div class="disclaimer-text">
@@ -159,28 +137,20 @@
 
     <div class="footer-note">
         <strong>【YihaoCar 計費標準】</strong><br>
-        • 起步價：80元<br>
-        • 里程費：15元/公里<br>
-        • 時間費：3元/分鐘<br>
-        • 長途加成：超過15公里後，每公里加收10元
+        • 起步價：80元 | 里程：15元/km | 時間：3元/min<br>
+        • 長途加成：超過 15km 後，每公里加收 10元
     </div>
 </div>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEYAIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4"></script>
-
 <script>
-    // 初始化自動完成功能
-    function initAutocomplete() {
-        const startInput = document.getElementById('start');
-        const endInput = document.getElementById('end');
-        const options = { componentRestrictions: { country: "tw" } }; // 限制在台灣
+    let autocompleteStart, autocompleteEnd;
 
-        new google.maps.places.Autocomplete(startInput, options);
-        new google.maps.places.Autocomplete(endInput, options);
+    // Google Maps API 載入後的啟動函式
+    function initService() {
+        const options = { componentRestrictions: { country: "tw" } };
+        autocompleteStart = new google.maps.places.Autocomplete(document.getElementById('start'), options);
+        autocompleteEnd = new google.maps.places.Autocomplete(document.getElementById('end'), options);
     }
-
-    // 當頁面載入完成
-    window.onload = initAutocomplete;
 
     function calculateFare() {
         const start = document.getElementById('start').value;
@@ -188,15 +158,14 @@
         const btn = document.getElementById('calc-btn');
 
         if (!start || !end) {
-            alert('請輸入完整的起點與終點地址');
+            alert('請輸入完整的起點與終點');
             return;
         }
 
         btn.disabled = true;
-        btn.innerText = '運算中...';
+        btn.innerText = '計算中...';
 
         const service = new google.maps.DistanceMatrixService();
-        
         service.getDistanceMatrix({
             origins: [start],
             destinations: [end],
@@ -207,35 +176,29 @@
 
             if (status === 'OK') {
                 const element = response.rows[0].elements[0];
-                
                 if (element.status === 'ZERO_RESULTS') {
-                    alert('找不到路徑，請嘗試輸入更精確的地址');
+                    alert('找不到路徑，請嘗試更精確的地址');
                     return;
                 }
 
-                // 取得真實數據
                 const distanceKm = element.distance.value / 1000;
                 const durationMin = Math.ceil(element.duration.value / 60);
 
-                // --- YihaoCar 計算邏輯 ---
+                // 計費邏輯
                 let baseFare = 80;
                 let distanceFare = distanceKm * 15;
                 let timeFare = durationMin * 3;
                 let extraFare = (distanceKm > 15) ? (distanceKm - 15) * 10 : 0;
-
                 const totalFare = Math.round(baseFare + distanceFare + timeFare + extraFare);
 
-                // 更新介面
                 const resultBox = document.getElementById('result');
                 const detailsText = document.getElementById('details-text');
                 
-                const message = `真實距離：${distanceKm.toFixed(1)} 公里\n預計車程：${durationMin} 分鐘\n--------------------\n預估總車資：$${totalFare} 元`;
-                
-                detailsText.innerText = message;
+                detailsText.innerText = `預估距離：${distanceKm.toFixed(1)} 公里\n預估時間：${durationMin} 分鐘\n--------------------\n預估總車資：$${totalFare} 元`;
                 resultBox.style.display = 'block';
                 resultBox.scrollIntoView({ behavior: 'smooth' });
             } else {
-                alert('API 服務錯誤: ' + status);
+                alert('系統錯誤: ' + status + '\n請檢查 API 是否啟用或帳單設定。');
             }
         });
     }
@@ -244,18 +207,19 @@
         const start = document.getElementById('start').value;
         const end = document.getElementById('end').value;
         const details = document.getElementById('details-text').innerText;
-        const disclaimer = "\n(※預估金額僅供參考，若遇連假加成、路徑更改，以司機報價為準)";
-        
+        const disclaimer = "\n(※預估金額僅供參考，以司機實際報價為準)";
         const fullMsg = `【YihaoCar 預約行程】\n起點：${start}\n終點：${end}\n${details}${disclaimer}`;
 
         navigator.clipboard.writeText(fullMsg).then(() => {
-            alert('行程資訊已複製！即將為您開啟 LINE');
+            alert('行程資訊已複製！即將開啟 LINE');
             window.location.href = "https://lin.ee/o8sVnUW"; 
-        }).catch(err => {
+        }).catch(() => {
             window.location.href = "https://lin.ee/o8sVnUW";
         });
     }
 </script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY_HERE:AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4" async defer></script>
 
 </body>
 </html>
