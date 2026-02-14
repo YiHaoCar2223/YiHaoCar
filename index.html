@@ -149,7 +149,7 @@
 
     <div class="static-fee-info" id="fee-info-box">
         <div class="fee-title">📋 計費標準</div>
-        <div class="fee-row"><span>起步車資</span><b>100 元</b></div>
+        <div class="fee-row"><span>起步車資</span><b>80 元</b></div>
         <div class="fee-row"><span>基本里程費</span><b>15 元 / km</b></div>
         <div class="fee-row"><span>行車時間費</span><b>3 元 / min</b></div>
         <div class="fee-row"><span>長途附加費(逾15km)</span><b>10 元 / km </b></div>
@@ -169,7 +169,7 @@
             <div class="detail-line"><span>里程費用</span><b id="dist-fee">$0</b></div>
             <div class="detail-line"><span>長途附加</span><b id="long-fee">$0</b></div>
             <div class="detail-line"><span>行車時間</span><b id="time-fee">$0</b></div>
-            <div class="detail-line"><span>起步價</span><b>$100</b></div>
+            <div class="detail-line"><span>起步價</span><b>$80</b></div>
             
             <div class="detail-line total-row">
                 <span style="font-weight:900; color:var(--main-blue);">總計 </span>
@@ -279,7 +279,7 @@
                 let rawLongFee = finalDist > 15 ? (finalDist - 15) * 10 : 0;
                 let longDistFee = Math.floor(rawLongFee / 10) * 10; 
                 let timeFee = finalTime * 3;
-                let startFee = 100;
+                let startFee = 80;
 
                 currentTotal = Math.floor((baseDistFee + longDistFee + timeFee + startFee) / 10) * 10;
 
@@ -296,7 +296,7 @@
                 document.getElementById('time-fee').innerText = `$${timeFee}`;
                 document.getElementById('price-tag').innerText = `$${currentTotal}`;
                 
-                detailMsg = `${finalDist.toFixed(1)}km/${finalTime}min | 里程$${baseDistFee}+長途$${longDistFee}+時間$${timeFee}+起步$100`;
+                detailMsg = `${finalDist.toFixed(1)}km/${finalTime}min | 里程$${baseDistFee}+長途$${longDistFee}+時間$${timeFee}+起步$80`;
 
                 if (currentTotal >= 300) document.getElementById('upgrade-alert').style.display = 'block';
                 else document.getElementById('upgrade-alert').style.display = 'none';
@@ -340,6 +340,7 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
+
 
 
 
