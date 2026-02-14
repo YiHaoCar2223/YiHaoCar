@@ -88,7 +88,6 @@
             display: none; position: relative; overflow: hidden; 
         }
 
-        /* 品牌防偽浮水印 */
         .result-panel::before {
             content: "YiHaoCar 正版系統";
             position: absolute; top: 50%; left: 50%;
@@ -138,7 +137,7 @@
         <label class="option-item"><input type="checkbox" id="avoidTolls"> <span>避開收費</span></label>
         <label class="option-item"><input type="checkbox" id="avoidHighways"> <span>避開高速</span></label>
         <label class="option-item option-full option-premium">
-            <input type="checkbox" id="premiumCar"> <span>指定進口車 (隨機車款)</span>
+            <input type="checkbox" id="premiumCar"> <span>指定進口車 (起步$150)</span>
         </label>
     </div>
 
@@ -149,7 +148,8 @@
 
     <div class="static-fee-info" id="fee-info-box">
         <div class="fee-title">📋 計費標準</div>
-        <div class="fee-row"><span>起步車資</span><b>80 元</b></div>
+        <div class="fee-row"><span>一般起步價</span><b>80 元</b></div>
+        <div class="fee-row"><span>進口車起步價</span><b>150 元</b></div>
         <div class="fee-row"><span>基本里程費</span><b>15 元 / km</b></div>
         <div class="fee-row"><span>行車時間費</span><b>3 元 / min</b></div>
         <div class="fee-row"><span>長途附加費(逾15km)</span><b>10 元 / km </b></div>
@@ -169,7 +169,7 @@
             <div class="detail-line"><span>里程費用</span><b id="dist-fee">$0</b></div>
             <div class="detail-line"><span>長途附加</span><b id="long-fee">$0</b></div>
             <div class="detail-line"><span>行車時間</span><b id="time-fee">$0</b></div>
-            <div class="detail-line"><span>起步價</span><b>$80</b></div>
+            <div class="detail-line"><span>起步車資</span><b id="display-start-fee">$80</b></div>
             
             <div class="detail-line total-row">
                 <span style="font-weight:900; color:var(--main-blue);">總計 </span>
@@ -193,6 +193,7 @@
     let detailMsg = "";
     let finalDist = 0;
     let finalTime = 0;
+    let finalStartFee = 80; // 預設起步價
 
     function toggleBookingTime() {
         const container = document.getElementById('booking-time-container');
@@ -247,6 +248,7 @@
         const start = document.getElementById('start').value;
         const end = document.getElementById('end').value;
         const isBooking = document.getElementById('enableBooking').checked;
+        const isPremium = document.getElementById('premiumCar').checked;
         const bookingTime = document.getElementById('pickupTime').value;
         const btn = document.getElementById('calc-btn');
 
@@ -275,13 +277,16 @@
                 document.getElementById('display-dist').innerText = finalDist.toFixed(1) + " km";
                 document.getElementById('display-duration').innerText = finalTime + " min";
 
+                // 動態計算起步價
+                finalStartFee = isPremium ? 150 : 80;
+                document.getElementById('display-start-fee').innerText = `$${finalStartFee}`;
+
                 let baseDistFee = Math.round(finalDist * 15);
                 let rawLongFee = finalDist > 15 ? (finalDist - 15) * 10 : 0;
                 let longDistFee = Math.floor(rawLongFee / 10) * 10; 
                 let timeFee = finalTime * 3;
-                let startFee = 80;
 
-                currentTotal = Math.floor((baseDistFee + longDistFee + timeFee + startFee) / 10) * 10;
+                currentTotal = Math.floor((baseDistFee + longDistFee + timeFee + finalStartFee) / 10) * 10;
 
                 document.getElementById('display-type').innerText = isBooking ? "預約行程" : "即時出發";
                 if (isBooking) {
@@ -296,9 +301,10 @@
                 document.getElementById('time-fee').innerText = `$${timeFee}`;
                 document.getElementById('price-tag').innerText = `$${currentTotal}`;
                 
-                detailMsg = `${finalDist.toFixed(1)}km/${finalTime}min | 里程$${baseDistFee}+長途$${longDistFee}+時間$${timeFee}+起步$80`;
+                detailMsg = `${finalDist.toFixed(1)}km/${finalTime}min | 里程$${baseDistFee}+長途$${longDistFee}+時間$${timeFee}+起步$${finalStartFee}`;
 
-                if (currentTotal >= 300) document.getElementById('upgrade-alert').style.display = 'block';
+                // 若為一般車且金額超過300，提示升級
+                if (currentTotal >= 300 && !isPremium) document.getElementById('upgrade-alert').style.display = 'block';
                 else document.getElementById('upgrade-alert').style.display = 'none';
 
                 document.getElementById('fee-info-box').style.display = 'none';
@@ -314,10 +320,8 @@
         const isPremium = document.getElementById('premiumCar').checked;
         const isBooking = document.getElementById('enableBooking').checked;
         const bookingTime = isBooking ? document.getElementById('pickupTime').value.replace('T', ' ') : "即時出發";
-        let carNote = isPremium ? "\n🌟 需求：指定進口車 (隨機)" : "";
-        if (currentTotal >= 300 && !isPremium) carNote = "\n💡 提醒：金額已達標，可免費升級進口車";
-
-        // 修正後的訊息字串
+        let carNote = isPremium ? "\n🌟 需求：指定進口車 (起步$150)" : "";
+       
         const msg = `【YiHaoCar 尊榮派遣預約】
 預約時間：${bookingTime}
 起點：${document.getElementById('start').value}
