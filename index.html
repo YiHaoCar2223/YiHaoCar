@@ -100,10 +100,21 @@
         .detail-card { background: #f8fafc; padding: 15px; border-radius: 20px; margin: 15px 0; border: 1px solid #e2e8f0; position: relative; z-index: 1; }
         .detail-line { display: flex; justify-content: space-between; font-size: 13px; color: #4a5568; margin-bottom: 8px; }
         .detail-line b { color: #1a202c; font-weight: 700; }
+        
+        /* 版權中間行樣式 */
+        .copyright-line { 
+            font-size: 10px; 
+            color: var(--accent-silver); 
+            text-align: center; 
+            margin: 12px 0; 
+            font-weight: bold; 
+            opacity: 0.6;
+            letter-spacing: 1px;
+        }
+
         .total-row { border-top: 2px solid #cbd5e1; padding-top: 10px; margin-top: 10px; }
         .price-text { font-size: 46px; font-weight: 900; color: var(--main-blue); letter-spacing: -2px; }
 
-        #upgrade-alert { display: none; background: #fff4e5; color: #c2410c; padding: 12px; border-radius: 15px; margin-bottom: 15px; font-size: 13px; font-weight: 700; text-align: center; border: 1px dashed #fdba74; }
         .btn-line { width: 100%; background: var(--line-green); color: white; padding: 16px; font-size: 17px; font-weight: 700; border: none; border-radius: 20px; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; position: relative; z-index: 1; }
     </style>
 </head>
@@ -137,12 +148,11 @@
         <label class="option-item"><input type="checkbox" id="avoidTolls"> <span>避開收費</span></label>
         <label class="option-item"><input type="checkbox" id="avoidHighways"> <span>避開高速</span></label>
         <label class="option-item option-full option-premium">
-            <input type="checkbox" id="premiumCar"> <span>指定進口車 (起步$150)</span>
+            <input type="checkbox" id="premiumCar"> <span>指定進口車 (隨機車款)</span>
         </label>
     </div>
 
     <div id="map"></div>
-    <div id="upgrade-alert">✨ 預估車資已達標，升級進口車不加價！</div>
     
     <button id="calc-btn" class="btn-calculate" onclick="calculateFare()">規劃行程並試算費用</button>
 
@@ -164,6 +174,9 @@
             
             <div class="detail-line"><span>預估路程</span><b id="display-dist">0 km</b></div>
             <div class="detail-line"><span>預估時間</span><b id="display-duration">0 min</b></div>
+
+            <div class="copyright-line">YiHaoCar 派遣系統版權所有 | 盜用必究</div>
+
             <hr style="border:0; border-top:1px dashed #edf2f7; margin:10px 0;">
 
             <div class="detail-line"><span>里程費用</span><b id="dist-fee">$0</b></div>
@@ -181,7 +194,7 @@
             <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" width="20"> 複製資訊並預約
         </button>
         <div style="font-size:10px; color:var(--accent-silver); text-align:center; margin-top:12px; font-weight:bold; opacity:0.5;">
-            © YiHaoCar 派遣系統版權所有 | 盜用必究
+            © YiHaoCar 派遣系統
         </div>
     </div>
 </div>
@@ -193,7 +206,7 @@
     let detailMsg = "";
     let finalDist = 0;
     let finalTime = 0;
-    let finalStartFee = 80; // 預設起步價
+    let finalStartFee = 80;
 
     function toggleBookingTime() {
         const container = document.getElementById('booking-time-container');
@@ -277,7 +290,6 @@
                 document.getElementById('display-dist').innerText = finalDist.toFixed(1) + " km";
                 document.getElementById('display-duration').innerText = finalTime + " min";
 
-                // 動態計算起步價
                 finalStartFee = isPremium ? 150 : 80;
                 document.getElementById('display-start-fee').innerText = `$${finalStartFee}`;
 
@@ -303,10 +315,6 @@
                 
                 detailMsg = `${finalDist.toFixed(1)}km/${finalTime}min | 里程$${baseDistFee}+長途$${longDistFee}+時間$${timeFee}+起步$${finalStartFee}`;
 
-                // 若為一般車且金額超過300，提示升級
-                if (currentTotal >= 300 && !isPremium) document.getElementById('upgrade-alert').style.display = 'block';
-                else document.getElementById('upgrade-alert').style.display = 'none';
-
                 document.getElementById('fee-info-box').style.display = 'none';
                 document.getElementById('result').style.display = 'block';
                 document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
@@ -320,8 +328,8 @@
         const isPremium = document.getElementById('premiumCar').checked;
         const isBooking = document.getElementById('enableBooking').checked;
         const bookingTime = isBooking ? document.getElementById('pickupTime').value.replace('T', ' ') : "即時出發";
-        let carNote = isPremium ? "\n🌟 需求：指定進口車 (起步$150)" : "";
-       
+        let carNote = isPremium ? "\n🌟 需求：指定進口車 (隨機車款)" : "";
+
         const msg = `【YiHaoCar 尊榮派遣預約】
 預約時間：${bookingTime}
 起點：${document.getElementById('start').value}
@@ -344,9 +352,6 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
-
-
-
 
 
 
