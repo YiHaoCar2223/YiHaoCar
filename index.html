@@ -16,51 +16,45 @@
             --gold: #b45309;
         }
 
-      body {
-    font-family: 'Noto Sans TC', sans-serif;
-    /* 修正 1：背景圖寬度 100% 撐滿，對齊底部 */
+   /* 1. 背景圖片：確保尾燈置底顯示 */
+body {
     background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('bg.jpg');
-    background-size: 100% auto; 
-    background-position: center bottom; 
+    background-size: 100% auto; /* 寬度撐滿，高度自動以顯示完整圖片 */
+    background-position: center bottom; /* 強制對齊底部尾燈 */
     background-repeat: no-repeat;
-    background-attachment: fixed;
+    background-attachment: fixed; /* 固定背景，不隨捲動消失 */
     background-color: #000;
-    margin: 0; padding: 0; min-height: 100vh;
-    display: flex; justify-content: center;
-    align-items: flex-start; 
 }
 
-.main-card {
-    background: var(--pure-white);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    width: 90%; max-width: 480px;
-    padding: 30px 20px; border-radius: 40px;
-    box-shadow: 0 20px 50px var(--shadow-color);
-    position: relative;
-    z-index: 1;
-    margin-top: 25px;
-    /* 修正 2：減少留空，讓尾燈剛好在捲動到底部時完整出現 */
-    margin-bottom: 120px; 
-}
-
-/* 修正 3：Logo 放大並精準切齊起點與地圖上方 */
+/* 2. 第一張卡片的 Logo 浮水印：放大並切齊起點到地圖上方 */
 .main-card::before {
     content: "";
     position: absolute;
-    /* 從卡片頂部 0 開始，寬度 100% 填滿 */
     top: 0; 
     left: 0;
     width: 100%; 
-    /* 高度設定為 420px，這大約是標題到地圖上方的距離，可根據實際體感微調 */
-    height: 420px; 
+    height: 450px; /* 這裡決定 Logo 延伸的高度，請根據地圖位置微調 */
     background: url('Logo.jpg') no-repeat center;
-    /* 讓 Logo 在這個範圍內撐到最大但不變形 */
-    background-size: 90% auto; 
-    opacity: 0.07; /* 更透明，不干擾文字 */
+    background-size: 90% auto; /* 放大 Logo 到填滿感 */
+    opacity: 0.08; /* 透明度調低，不遮擋文字 */
     z-index: -1;
     pointer-events: none;
-    border-radius: 40px 40px 0 0; /* 配合卡片圓角 */
+    border-radius: 40px 40px 0 0;
+}
+
+/* 3. 獨立計費標準卡片：透明化效果 */
+.static-fee-info {
+    background: rgba(255, 255, 255, 0.7) !important; /* 半透明白色 */
+    backdrop-filter: blur(10px); /* 磨砂玻璃模糊感 */
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3); /* 增加輕微邊框感 */
+    width: 100%; 
+    max-width: 480px;
+    padding: 25px 20px; 
+    border-radius: 30px;
+    margin-bottom: 120px; /* 留空讓下方背景尾燈顯現 */
+    box-sizing: border-box;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
 }
 
         /* 原始 UI 樣式保留 */
@@ -308,6 +302,7 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
+
 
 
 
