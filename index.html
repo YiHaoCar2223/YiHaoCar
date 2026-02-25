@@ -16,157 +16,115 @@
             --gold: #b45309;
         }
 
-   /* 1. 背景圖片：確保尾燈置底顯示 */
-/* 1. 修改背景與文字清晰度控制 */
-body {
-    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('bg.jpg');
-    background-size: 100% auto;
-    background-position: center bottom;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-color: #000;
-    /* 確保 body 撐滿但不產生多餘捲軸 */
-    margin: 0; padding: 15px; min-height: 100vh;
-}
+        /* 1. 背景圖片：車子置底顯示並固定 */
+        body {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('bg.jpg');
+            background-size: 100% auto;
+            background-position: center bottom;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-color: #000;
+            margin: 0; padding: 15px; min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
+        }
 
-/* 2. Logo 放大並切齊，但加入輕微發光讓上方文字浮現 */
-.main-card::before {
-    content: "";
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 450px;
-    background: url('Logo.jpg') no-repeat center;
-    background-size: 90% auto;
-    opacity: 0.05; /* 降低透明度，避免干擾黑色背景下的文字 */
-    z-index: -1;
-    pointer-events: none;
-    border-radius: 40px 40px 0 0;
-}
+        /* 2. 主卡片：深色半透明質感，確保文字在 Logo 上方清晰 */
+        .main-card {
+            background: rgba(26, 32, 44, 0.88); 
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            width: 100%; max-width: 480px;
+            padding: 30px 20px; border-radius: 40px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            position: relative; z-index: 1;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-sizing: border-box;
+        }
 
-/* 3. 計費標準：蓋在尾部圖片上 */
-.static-fee-info {
-    background: rgba(255, 255, 255, 0.85) !important; /* 稍微加深白色，與黑色背景對抗 */
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    width: 100%; max-width: 480px;
-    padding: 25px 20px; border-radius: 30px;
-    
-    /* 關鍵修改：縮小底部間距，讓卡片蓋在尾燈位置 */
-    margin-top: 10px;
-    margin-bottom: 40px; 
-    
-    box-sizing: border-box;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    position: relative;
-    z-index: 2;
-}
+        /* 3. Logo 放大浮水印：切齊起點至地圖上方 */
+        .main-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 430px; 
+            background: url('Logo.jpg') no-repeat center;
+            background-size: 90% auto;
+            opacity: 0.12;
+            z-index: -1;
+            pointer-events: none;
+            border-radius: 40px 40px 0 0;
+        }
 
-/* 4. 增強文字可讀性 (針對藍色文字在暗背景下的表現) */
-.brand-logo {
-    text-shadow: 0 2px 10px rgba(255,255,255,0.2); /* 給標題一點微光 */
-}
-
-.input-box {
-    background: rgba(255, 255, 255, 0.9) !important; /* 讓輸入框更亮一點 */
-    border: 1px solid #cbd5e1;
-}
-
-.form-label {
-    font-weight: 900;
-    color: var(--main-blue);
-    text-shadow: 0 0 1px white; /* 給標籤一點白色描邊，確保在 Logo 疊加下清晰 */
-}
-.static-fee-info {
-    background: rgba(255, 255, 255, 0.7) !important; /* 半透明白色 */
-    backdrop-filter: blur(10px); /* 磨砂玻璃模糊感 */
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3); /* 增加輕微邊框感 */
-    width: 100%; 
-    max-width: 480px;
-    padding: 25px 20px; 
-    border-radius: 30px;
-    margin-bottom: 120px; /* 留空讓下方背景尾燈顯現 */
-    box-sizing: border-box;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-}
-
-        /* 原始 UI 樣式保留 */
+        /* 品牌區域文字修正 */
         .brand-zone { text-align: center; margin-bottom: 25px; position: relative; z-index: 2; }
-        .brand-logo { font-size: 32px; font-weight: 900; color: var(--main-blue); margin: 0; letter-spacing: -0.5px; }
+        .brand-logo { font-size: 32px; font-weight: 900; color: #fff; margin: 0; letter-spacing: -0.5px; }
         .brand-tagline { font-size: 14px; font-weight: 400; color: var(--accent-silver); letter-spacing: 5px; margin-top: 5px; }
 
+        /* 表單標籤與輸入框 */
         .form-group { margin-bottom: 15px; position: relative; z-index: 2; }
-        .form-label { font-size: 11px; font-weight: 900; margin-bottom: 6px; display: block; color: var(--main-blue); opacity: 0.8; }
+        .form-label { font-size: 11px; font-weight: 900; margin-bottom: 6px; display: block; color: #fff; opacity: 0.9; }
 
         .input-box {
             width: 100%; padding: 15px 18px; 
-            border: 1px solid rgba(0,0,0,0.1); border-radius: 18px; 
-            font-size: 15px; background: rgba(255,255,255,0.7); 
-            color: #1a202c; box-sizing: border-box; transition: 0.3s;
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 18px; 
+            font-size: 15px; background: #ffffff !important; 
+            color: #1a202c !important; box-sizing: border-box; transition: 0.3s;
             font-family: inherit;
         }
-        .input-box:focus { border-color: var(--main-blue); outline: none; background: white; }
 
-        #booking-time-container { display: none; margin-top: 10px; }
-
+        /* 選項網格 */
         .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; position: relative; z-index: 2; }
         .option-item {
-            background: rgba(248, 250, 252, 0.6); padding: 12px; border-radius: 15px;
+            background: rgba(255, 255, 255, 0.1); padding: 12px; border-radius: 15px;
             display: flex; align-items: center; cursor: pointer;
-            border: 1px solid rgba(0,0,0,0.05); transition: 0.2s;
+            border: 1px solid rgba(255,255,255,0.1); transition: 0.2s;
         }
-        .option-item input { margin-right: 10px; width: 18px; height: 18px; }
-        .option-item span { font-size: 13px; font-weight: 700; color: #4a5568; }
+        .option-item span { font-size: 13px; font-weight: 700; color: #fff; }
         .option-full { grid-column: span 2; }
-        .option-premium { background: rgba(255, 251, 235, 0.8); border: 1px solid #fef3c7; }
-        .option-premium span { color: var(--gold); }
-        .option-booking { background: rgba(238, 242, 255, 0.8); border: 1px solid #e0e7ff; }
-        .option-booking span { color: #4338ca; }
+        .option-premium { background: rgba(255, 251, 235, 0.15); border: 1px solid rgba(254, 243, 199, 0.3); }
+        .option-premium span { color: #f6ad55; }
+        .option-booking { background: rgba(238, 242, 255, 0.15); border: 1px solid rgba(224, 231, 255, 0.3); }
+        .option-booking span { color: #a5b4fc; }
 
-        #map { width: 100%; height: 260px; border-radius: 25px; margin: 15px 0; background: #e2e8f0; border: 2px solid white; position: relative; z-index: 2; }
+        #map { width: 100%; height: 260px; border-radius: 25px; margin: 15px 0; background: #e2e8f0; border: 2px solid rgba(255,255,255,0.2); position: relative; z-index: 2; }
 
         .btn-calculate { 
-            width: 100%; background: var(--main-blue); color: white; padding: 18px; 
-            font-size: 18px; font-weight: 700; border: none; border-radius: 20px; 
+            width: 100%; background: #4a90e2; color: white; padding: 18px; 
+            font-size: 18px; font-weight: 900; border: none; border-radius: 20px; 
             cursor: pointer; margin-bottom: 20px; transition: 0.3s; 
             position: relative; z-index: 2;
         }
-        .btn-calculate:disabled { background: var(--accent-silver); cursor: not-allowed; }
 
+        /* 4. 獨立計費標準卡片：疊加在尾燈上 */
         .static-fee-info {
-            background: rgba(255, 255, 255, 0.6); padding: 20px; border-radius: 22px;
-            border: 1px solid rgba(0,0,0,0.05); margin-top: 10px; position: relative; z-index: 2;
+            background: rgba(255, 255, 255, 0.9) !important; 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            width: 100%; max-width: 480px;
+            padding: 25px 20px; border-radius: 30px;
+            margin-top: 15px;
+            margin-bottom: 60px; /* 這裡的間距決定它蓋在尾燈的位置 */
+            box-sizing: border-box;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative; z-index: 2;
         }
-        .fee-title { font-size: 14px; font-weight: 900; color: var(--main-blue); margin-bottom: 12px; }
-        .fee-row { display: flex; justify-content: space-between; font-size: 13px; color: #64748b; margin-bottom: 6px; }
-        .fee-row b { color: #1e293b; }
+        .fee-title { font-size: 16px; font-weight: 900; color: var(--main-blue); margin-bottom: 12px; text-align: center; }
+        .fee-row { display: flex; justify-content: space-between; font-size: 14px; color: #2d3748; margin-bottom: 6px; }
+        .fee-row b { color: #000; }
 
-        /* 結果面板 - 完整細節與版權文字保留 */
+        /* 結果面板 */
         .result-panel { 
             margin-top: 20px; padding: 25px; border-radius: 30px; 
-            background: #ffffff; border: 2.5px solid var(--main-blue); 
+            background: #ffffff; border: 2.5px solid #4a90e2; 
             display: none; position: relative; overflow: hidden; z-index: 5;
         }
-
-        .result-panel::before {
-            content: "I!ne一客 正版系統";
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%) rotate(-25deg);
-            font-size: 32px; font-weight: 900; color: rgba(0, 45, 94, 0.04);
-            white-space: nowrap; pointer-events: none;
-        }
-
-        .detail-card { background: #f8fafc; padding: 15px; border-radius: 20px; margin: 15px 0; border: 1px solid #e2e8f0; position: relative; z-index: 1; }
-        .detail-line { display: flex; justify-content: space-between; font-size: 13px; color: #4a5568; margin-bottom: 8px; }
-        .detail-line b { color: #1a202c; font-weight: 700; }
-        .total-row { border-top: 2.5px solid #cbd5e1; padding-top: 10px; margin-top: 10px; }
-        .price-text { font-size: 46px; font-weight: 900; color: var(--main-blue); letter-spacing: -2px; }
-
-        .copyright-line { font-size: 10px; color: var(--accent-silver); text-align: center; margin: 12px 0; font-weight: bold; opacity: 0.6; }
+        .detail-card { background: #f8fafc; padding: 15px; border-radius: 20px; margin: 15px 0; border: 1px solid #e2e8f0; }
+        .price-text { font-size: 46px; font-weight: 900; color: #002d5e; letter-spacing: -2px; }
         .btn-line { width: 100%; background: var(--line-green); color: white; padding: 16px; font-size: 17px; font-weight: 700; border: none; border-radius: 20px; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
+
 <div class="main-card">
     <div class="brand-zone">
         <h1 class="brand-logo">I!ne一客</h1>
@@ -202,15 +160,6 @@ body {
     
     <button id="calc-btn" class="btn-calculate" onclick="calculateFare()">規劃行程並試算費用</button>
 
-    <div class="static-fee-info" id="fee-info-box">
-        <div class="fee-title"> 計費標準</div>
-        <div class="fee-row"><span>一般起步價</span><b>80 元</b></div>
-        <div class="fee-row"><span>進口車起步價</span><b>150 元</b></div>
-        <div class="fee-row"><span>基本里程費</span><b>15 元 / km</b></div>
-        <div class="fee-row"><span>行車時間費</span><b>3 元 / min</b></div>
-        <div class="fee-row"><span>長途附加費(逾15km)</span><b>10 元 / km </b></div>
-    </div>
-
     <div id="result" class="result-panel">
         <div style="font-size:12px; color:var(--accent-silver); font-weight:700;">預估行程與費用拆解</div>
         <div class="detail-card">
@@ -218,26 +167,29 @@ body {
             <div class="detail-line" id="res-time-row" style="display:none;"><span>預約時間</span><b id="display-time">-</b></div>
             <div class="detail-line"><span>預估路程</span><b id="display-dist">0 km</b></div>
             <div class="detail-line"><span>預估時間</span><b id="display-duration">0 min</b></div>
-
-            <div class="copyright-line">I!ne一客 派遣系統版權所有 | 盜用必究</div>
-
             <hr style="border:0; border-top:1px dashed #edf2f7; margin:10px 0;">
-
             <div class="detail-line"><span>里程費用</span><b id="dist-fee">$0</b></div>
             <div class="detail-line"><span>長途附加</span><b id="long-fee">$0</b></div>
             <div class="detail-line"><span>行車時間</span><b id="time-fee">$0</b></div>
             <div class="detail-line"><span>起步車資</span><b id="display-start-fee">$80</b></div>
-            
-            <div class="detail-line total-row">
-                <span style="font-weight:900; color:var(--main-blue);">總計 </span>
+            <div class="detail-line" style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; border-top:2px solid #cbd5e1; padding-top:10px;">
+                <span style="font-weight:900; color:#002d5e;">總計 </span>
                 <span id="price-tag" class="price-text">$0</span>
             </div>
         </div>
         <button class="btn-line" onclick="copyAndLine()">
             <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" width="20"> 複製資訊並預約
         </button>
-        <div style="font-size:10px; color:var(--accent-silver); text-align:center; margin-top:12px; font-weight:bold; opacity:0.5;">© I!ne一客 優質乘車服務</div>
     </div>
+</div>
+
+<div class="static-fee-info" id="fee-info-box">
+    <div class="fee-title"> 計費標準</div>
+    <div class="fee-row"><span>一般起步價</span><b>80 元</b></div>
+    <div class="fee-row"><span>進口車起步價</span><b>150 元</b></div>
+    <div class="fee-row"><span>基本里程費</span><b>15 元 / km</b></div>
+    <div class="fee-row"><span>行車時間費</span><b>3 元 / min</b></div>
+    <div class="fee-row"><span>長途附加費(逾15km)</span><b>10 元 / km </b></div>
 </div>
 
 <script>
@@ -251,7 +203,7 @@ body {
 
     function initMap() {
         directionsService = new google.maps.DirectionsService();
-        directionsRenderer = new google.maps.DirectionsRenderer({ polylineOptions: { strokeColor: "#002d5e", strokeWeight: 6 } });
+        directionsRenderer = new google.maps.DirectionsRenderer({ polylineOptions: { strokeColor: "#4a90e2", strokeWeight: 6 } });
         map = new google.maps.Map(document.getElementById("map"), { 
             zoom: 13, 
             center: { lat: 24.1477, lng: 120.6736 }, 
@@ -335,7 +287,6 @@ body {
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
-
 
 
 
