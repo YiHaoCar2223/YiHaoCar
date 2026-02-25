@@ -271,8 +271,8 @@ function copyAndLine() {
         // 1. 建立需求清單
         let requirements = [];
         if (isPremium) requirements.push("指定進口車");
-        if (isAvoidTolls) requirements.push("避開收費");
-        if (isAvoidHighways) requirements.push("避開高速");
+        if (isAvoidTolls) requirements.push("避開收費道路");
+        if (isAvoidHighways) requirements.push("避開國道收費路段");
 
         // 2. 格式化需求字串 (如果清單不為空，則換行並加上星號標記)
         let carNote = requirements.length > 0 ? `\n🌟 需求：${requirements.join('、')}` : "";
@@ -313,6 +313,7 @@ function copyAndLine() {
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
+
 
 
 
