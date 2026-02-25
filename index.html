@@ -60,10 +60,30 @@
         .option-item span { font-size: 13px; font-weight: 700; color: #fff; margin-left: 8px; }
         .option-full { grid-column: span 2; }
 
-        /* 預約方框初始隱藏 */
         #booking-time-container { display: none; margin-top: 10px; }
 
-        #map { width: 100%; height: 260px; border-radius: 25px; margin: 15px 0; border: 2px solid rgba(255,255,255,0.2); }
+        /* --- 新增圖片樣式 --- */
+        .map-header-img {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .map-header-img img {
+            max-width: 100%;
+            height: auto;
+            opacity: 0.1; /* 透明度 10% */
+            border-radius: 15px 15px 0 0; /* 讓圖片底部平整地與地圖對接 */
+        }
+
+        #map { 
+            width: 100%; height: 260px; 
+            border-radius: 0 0 25px 25px; /* 地圖上方維持平整以切齊圖片 */
+            margin-bottom: 15px; 
+            border: 2px solid rgba(255,255,255,0.2); 
+            box-sizing: border-box;
+        }
+        /* 若不需要圖片地圖緊貼，可調整上述 border-radius 為全圓角 25px */
 
         .btn-calculate { 
             width: 100%; background: #4a90e2; color: white; padding: 18px; 
@@ -87,7 +107,6 @@
         .fee-row { display: flex; justify-content: space-between; font-size: 14px; color: #2d3748; margin-bottom: 6px; }
         .fee-row b { color: #000; }
 
-        /* 試算結果區塊：透明磨砂 */
         .result-panel { 
             margin-top: 20px; padding: 25px; border-radius: 30px; 
             background: rgba(255, 255, 255, 0.15) !important; 
@@ -145,6 +164,9 @@
         </label>
     </div>
 
+    <div class="map-header-img">
+        <img src="Logo.jpg" alt="Logo">
+    </div>
     <div id="map"></div>
     
     <button id="calc-btn" class="btn-calculate" onclick="calculateFare()">規劃行程並試算費用</button>
@@ -283,22 +305,20 @@
     }
 
     function copyAndLine() {
-    const isPremium = document.getElementById('premiumCar').checked;
-    const isBooking = document.getElementById('enableBooking').checked;
-    const isAvoidTolls = document.getElementById('avoidTolls').checked;
-    const isAvoidHighways = document.getElementById('avoidHighways').checked;
-    const bookingTime = isBooking ? document.getElementById('pickupTime').value.replace('T', ' ') : "即時出發";
-    
-    // 建立需求清單
-    let requirements = [];
-    if (isPremium) requirements.push("指定進口車 (隨機車款)");
-    if (isAvoidTolls) requirements.push("避開收費路段");
-    if (isAvoidHighways) requirements.push("避開高速公路");
+        const isPremium = document.getElementById('premiumCar').checked;
+        const isBooking = document.getElementById('enableBooking').checked;
+        const isAvoidTolls = document.getElementById('avoidTolls').checked;
+        const isAvoidHighways = document.getElementById('avoidHighways').checked;
+        const bookingTime = isBooking ? document.getElementById('pickupTime').value.replace('T', ' ') : "即時出發";
+        
+        let requirements = [];
+        if (isPremium) requirements.push("指定進口車 (隨機車款)");
+        if (isAvoidTolls) requirements.push("避開收費路段");
+        if (isAvoidHighways) requirements.push("避開高速公路");
 
-    // 格式化需求字串
-    let carNote = requirements.length > 0 ? "\n🌟 需求：" + requirements.join('、') : "";
+        let carNote = requirements.length > 0 ? "\n🌟 需求：" + requirements.join('、') : "";
 
-    const msg = `【I!ne一客 優質乘車預約】
+        const msg = `【I!ne一客 優質乘車預約】
 預約時間：${bookingTime}
 起點：${document.getElementById('start').value}
 終點：${document.getElementById('end').value}
@@ -309,15 +329,14 @@
 ⚠️ 本報價由 I!ne一客 系統產出，僅供參考
 ⚠️ 實際依照司機跳錶收費為主`;
 
-    navigator.clipboard.writeText(msg).then(() => {
-        alert('預約資訊已複製！將開啟 LINE。');
-        window.location.href = "https://lin.ee/o8sVnUW";
-    });
-}
+        navigator.clipboard.writeText(msg).then(() => {
+            alert('預約資訊已複製！將開啟 LINE。');
+            window.location.href = "https://lin.ee/o8sVnUW";
+        });
+    }
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
-
 
 
