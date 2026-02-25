@@ -17,32 +17,65 @@
         }
 
    /* 1. 背景圖片：確保尾燈置底顯示 */
+/* 1. 修改背景與文字清晰度控制 */
 body {
-    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('bg.jpg');
-    background-size: 100% auto; /* 寬度撐滿，高度自動以顯示完整圖片 */
-    background-position: center bottom; /* 強制對齊底部尾燈 */
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('bg.jpg');
+    background-size: 100% auto;
+    background-position: center bottom;
     background-repeat: no-repeat;
-    background-attachment: fixed; /* 固定背景，不隨捲動消失 */
+    background-attachment: fixed;
     background-color: #000;
+    /* 確保 body 撐滿但不產生多餘捲軸 */
+    margin: 0; padding: 15px; min-height: 100vh;
 }
 
-/* 2. 第一張卡片的 Logo 浮水印：放大並切齊起點到地圖上方 */
+/* 2. Logo 放大並切齊，但加入輕微發光讓上方文字浮現 */
 .main-card::before {
     content: "";
     position: absolute;
-    top: 0; 
-    left: 0;
-    width: 100%; 
-    height: 450px; /* 這裡決定 Logo 延伸的高度，請根據地圖位置微調 */
+    top: 0; left: 0; width: 100%; height: 450px;
     background: url('Logo.jpg') no-repeat center;
-    background-size: 90% auto; /* 放大 Logo 到填滿感 */
-    opacity: 0.08; /* 透明度調低，不遮擋文字 */
+    background-size: 90% auto;
+    opacity: 0.05; /* 降低透明度，避免干擾黑色背景下的文字 */
     z-index: -1;
     pointer-events: none;
     border-radius: 40px 40px 0 0;
 }
 
-/* 3. 獨立計費標準卡片：透明化效果 */
+/* 3. 計費標準：蓋在尾部圖片上 */
+.static-fee-info {
+    background: rgba(255, 255, 255, 0.85) !important; /* 稍微加深白色，與黑色背景對抗 */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    width: 100%; max-width: 480px;
+    padding: 25px 20px; border-radius: 30px;
+    
+    /* 關鍵修改：縮小底部間距，讓卡片蓋在尾燈位置 */
+    margin-top: 10px;
+    margin-bottom: 40px; 
+    
+    box-sizing: border-box;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 2;
+}
+
+/* 4. 增強文字可讀性 (針對藍色文字在暗背景下的表現) */
+.brand-logo {
+    text-shadow: 0 2px 10px rgba(255,255,255,0.2); /* 給標題一點微光 */
+}
+
+.input-box {
+    background: rgba(255, 255, 255, 0.9) !important; /* 讓輸入框更亮一點 */
+    border: 1px solid #cbd5e1;
+}
+
+.form-label {
+    font-weight: 900;
+    color: var(--main-blue);
+    text-shadow: 0 0 1px white; /* 給標籤一點白色描邊，確保在 Logo 疊加下清晰 */
+}
 .static-fee-info {
     background: rgba(255, 255, 255, 0.7) !important; /* 半透明白色 */
     backdrop-filter: blur(10px); /* 磨砂玻璃模糊感 */
@@ -302,6 +335,7 @@ body {
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
+
 
 
 
