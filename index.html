@@ -29,19 +29,20 @@
             color: #2d3748;
         }
 
-        .main-card {
-            background: var(--pure-white);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            width: 100%; max-width: 480px;
-            padding: 30px 20px; border-radius: 40px;
-            box-shadow: 0 30px 60px var(--shadow-color);
-            position: relative;
-            z-index: 1;
-            overflow: hidden;
-            margin-top: 20px;
-            margin-bottom: 350px; /* 底部留白，捲動時背景尾燈會完整露出來 */
-        }
+        .main-card::before {
+    content: "";
+    position: absolute;
+    top: 65px;             /* 稍微下移，避開標題 */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 95%;            /* 放大寬度 */
+    height: 300px;         /* 限制高度，確保地圖區是乾淨的 */
+    background: url('Logo.jpg') no-repeat center;
+    background-size: contain; 
+    opacity: 0.1;          /* 調更透明，更有質感 */
+    z-index: -1;
+    pointer-events: none;
+}
 
         /* Logo 修正：固定在卡片上半部，避開下方的地圖 */
         .main-card::before {
@@ -304,4 +305,5 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
+
 
