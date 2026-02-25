@@ -255,38 +255,42 @@
             }
         });
     }
+function copyAndLine() {
+        const isPremium = document.getElementById('premiumCar').checked;
+        const isBooking = document.getElementById('enableBooking').checked;
+        const isAvoidTolls = document.getElementById('avoidTolls').checked;
+        const isAvoidHighways = document.getElementById('avoidHighways').checked;
+        const bookingTime = isBooking ? document.getElementById('pickupTime').value.replace('T', ' ') : "即時出發";
+        
+        // 1. 建立需求清單
+        let requirements = [];
+        if (isPremium) requirements.push("指定進口車 (隨機車款)");
+        if (isAvoidTolls) requirements.push("避開收費路段");
+        if (isAvoidHighways) requirements.push("避開高速公路");
 
-    function copyAndLine() {
-    const isPremium = document.getElementById('premiumCar').checked;
-    const isBooking = document.getElementById('enableBooking').checked;
-    const isAvoidTolls = document.getElementById('avoidTolls').checked;
-    const isAvoidHighways = document.getElementById('avoidHighways').checked;
-    const bookingTime = isBooking ? document.getElementById('pickupTime').value.replace('T', ' ') : "即時出發";
-    
-    // 建立需求清單
-    let requirements = [];
-    if (isPremium) requirements.push("指定進口車 (隨機車款)");
-    if (isAvoidTolls) requirements.push("避開收費路段");
-    if (isAvoidHighways) requirements.push("避開高速公路");
+        // 2. 格式化需求字串
+        let carNote = requirements.length > 0 ? "\n🌟 需求：" + requirements.join('、') : "";
 
-    // 格式化需求字串
-    let carNote = requirements.length > 0 ? "\n🌟 需求：" + requirements.join('、') : "";
-       const msg = `【I!ne一客 優質乘車預約】
+        // 3. 組合訊息 (修正點：這裡必須把 carNote 加進去)
+        const msg = `【I!ne一客 優質乘車預約】
 預約時間：${bookingTime}
 起點：${document.getElementById('start').value}
 終點：${document.getElementById('end').value}
 路程資訊：${finalDist.toFixed(1)} km / ${finalTime} min
-預估車資：$${currentTotal} 
+預估車資：$${currentTotal}${carNote} 
 ---
 ⚠️ 本報價由 I!ne一客 系統產出，僅供參考
 ⚠️ 實際依照司機跳錶收費為主`;
+
         navigator.clipboard.writeText(msg).then(() => {
-            alert('資訊已複製！'); window.location.href = "https://lin.ee/o8sVnUW";
+            alert('資訊已複製！'); 
+            window.location.href = "https://lin.ee/o8sVnUW";
         });
     }
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
+
 
 
