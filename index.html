@@ -62,28 +62,33 @@
 
         #booking-time-container { display: none; margin-top: 10px; }
 
-        /* --- 新增圖片樣式 --- */
+        /* --- 修正後的圖片樣式 --- */
         .map-header-img {
             width: 100%;
             display: flex;
             justify-content: center;
-            margin-top: 10px;
+            background: rgba(255,255,255,0.05); /* 輕微背景底色增加質感 */
+            border-radius: 25px 25px 0 0; /* 圓角只在上半部 */
+            border: 2px solid rgba(255,255,255,0.2);
+            border-bottom: none; /* 與地圖銜接處不留邊框 */
+            overflow: hidden;
+            box-sizing: border-box;
         }
         .map-header-img img {
-            max-width: 100%;
+            width: 100%;
             height: auto;
-            opacity: 0.1; /* 透明度 10% */
-            border-radius: 15px 15px 0 0; /* 讓圖片底部平整地與地圖對接 */
+            max-height: 120px; /* 限制高度避免圖片過大 */
+            object-fit: contain;
+            opacity: 0.1; /* 10% 透明度 */
         }
 
         #map { 
             width: 100%; height: 260px; 
-            border-radius: 0 0 25px 25px; /* 地圖上方維持平整以切齊圖片 */
-            margin-bottom: 15px; 
+            border-radius: 0 0 25px 25px; /* 地圖下方圓角，上方平整銜接圖片 */
             border: 2px solid rgba(255,255,255,0.2); 
             box-sizing: border-box;
+            margin-bottom: 15px;
         }
-        /* 若不需要圖片地圖緊貼，可調整上述 border-radius 為全圓角 25px */
 
         .btn-calculate { 
             width: 100%; background: #4a90e2; color: white; padding: 18px; 
@@ -173,24 +178,19 @@
 
     <div id="result" class="result-panel">
         <div style="font-size:12px; color:var(--accent-silver); font-weight:700; margin-bottom:15px; text-align:center;">預估行程與費用拆解</div>
-        
         <div class="detail-line"><span>需求類別</span><b id="display-type">即時出發</b></div>
         <div class="detail-line" id="res-time-row" style="display:none;"><span>預約時間</span><b id="display-time">-</b></div>
         <div class="detail-line"><span>預估路程</span><b id="display-dist">0 km</b></div>
         <div class="detail-line"><span>預估時間</span><b id="display-duration">0 min</b></div>
-
         <hr style="border:0; border-top:1px dashed rgba(255,255,255,0.1); margin:15px 0;">
-
         <div class="detail-line"><span>里程費用</span><b id="dist-fee">$0</b></div>
         <div class="detail-line"><span>長途附加</span><b id="long-fee">$0</b></div>
         <div class="detail-line"><span>行車時間</span><b id="time-fee">$0</b></div>
         <div class="detail-line"><span>起步車資</span><b id="display-start-fee">$80</b></div>
-        
         <div class="detail-line total-row">
             <span style="font-weight:900;">總計金額</span>
             <span id="price-tag" class="price-text">$0</span>
         </div>
-        
         <button class="btn-line" onclick="copyAndLine()">
             <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" width="20"> 複製資訊並預約
         </button>
@@ -208,6 +208,7 @@
 </div>
 
 <script>
+    // JS 內容保持不變
     let map, directionsService, directionsRenderer;
     let currentTotal = 0;
     let detailMsg = "";
@@ -335,8 +336,9 @@
         });
     }
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places&callback=initMap&language=zh-TW" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
+
 
 
