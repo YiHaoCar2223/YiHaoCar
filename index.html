@@ -57,7 +57,7 @@
             background: rgba(255, 255, 255, 0.1); padding: 12px; border-radius: 15px;
             display: flex; align-items: center; border: 1px solid rgba(255,255,255,0.1); cursor: pointer;
         }
-        .option-item span { font-size: 13px; font-weight: 700; color: #fff; margin-left: 5px; }
+        .option-item span { font-size: 13px; font-weight: 700; color: #fff; margin-left: 8px; }
         .option-full { grid-column: span 2; }
 
         /* 預約方框初始隱藏 */
@@ -68,10 +68,10 @@
         .btn-calculate { 
             width: 100%; background: #4a90e2; color: white; padding: 18px; 
             font-size: 18px; font-weight: 900; border: none; border-radius: 20px; cursor: pointer;
-            font-family: inherit;
+            font-family: inherit; transition: 0.3s;
         }
+        .btn-calculate:active { transform: scale(0.98); opacity: 0.9; }
 
-        /* 修改：計費標準 60% 透明磨砂 */
         .static-fee-info {
             background: rgba(255, 255, 255, 0.6) !important; 
             backdrop-filter: blur(10px);
@@ -87,10 +87,10 @@
         .fee-row { display: flex; justify-content: space-between; font-size: 14px; color: #2d3748; margin-bottom: 6px; }
         .fee-row b { color: #000; }
 
-        /* 修改：試算結果區塊改為透明磨砂且字體美化 */
+        /* 試算結果區塊：透明磨砂 */
         .result-panel { 
             margin-top: 20px; padding: 25px; border-radius: 30px; 
-            background: rgba(255, 255, 255, 0.15); 
+            background: rgba(255, 255, 255, 0.15) !important; 
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.2); 
@@ -214,28 +214,36 @@
     }
 
     function calculateFare() {
-        const start = document.getElementById('start').value;
-        const end = document.getElementById('end').value;
+        const startVal = document.getElementById('start').value;
+        const endVal = document.getElementById('end').value;
         const isBooking = document.getElementById('enableBooking').checked;
         const isPremium = document.getElementById('premiumCar').checked;
         const bookingTime = document.getElementById('pickupTime').value;
         const btn = document.getElementById('calc-btn');
 
-        if (!start || !end) return alert('請填寫完整地址');
-        if (isBooking && !bookingTime) return alert('請輸入預約時間');
+        if (!startVal || !endVal) {
+            alert('請填寫完整地址');
+            return;
+        }
+        if (isBooking && !bookingTime) {
+            alert('請輸入預約時間');
+            return;
+        }
         
         btn.disabled = true;
-        btn.innerText = "計算中...";
+        btn.innerText = "規劃中...";
 
         directionsService.route({ 
-            origin: start, destination: end, travelMode: 'DRIVING', 
+            origin: startVal, 
+            destination: endVal, 
+            travelMode: 'DRIVING', 
             avoidTolls: document.getElementById('avoidTolls').checked, 
             avoidHighways: document.getElementById('avoidHighways').checked 
-        }, (result, status) => {
+        }, function(result, status) {
             btn.disabled = false;
             btn.innerText = "規劃行程並試算費用";
 
-            if (status == 'OK') {
+            if (status === 'OK') {
                 directionsRenderer.setDirections(result);
                 const leg = result.routes[0].legs[0];
                 finalDist = leg.distance.value / 1000;
@@ -264,11 +272,12 @@
                 }
 
                 detailMsg = finalDist.toFixed(1) + "km/" + finalTime + "min | 里程$" + baseDistFee + "+長途$" + longDistFee + "+時間$" + timeFee + "+起步$" + startFee;
+                
                 document.getElementById('fee-info-box').style.display = 'none';
                 document.getElementById('result').style.display = 'block';
                 document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
             } else {
-                alert('規劃失敗');
+                alert('路線規劃失敗，請確認地址是否正確。');
             }
         });
     }
@@ -279,6 +288,7 @@
         const bookingTime = isBooking ? document.getElementById('pickupTime').value.replace('T', ' ') : "即時出發";
         let carNote = isPremium ? "\n🌟 需求：指定進口車 (隨機車款)" : "";
 
+        // 這是您要求取代的新訊息格式
         const msg = `【I!ne一客 優質乘車預約】
 預約時間：${bookingTime}
 起點：${document.getElementById('start').value}
@@ -288,8 +298,7 @@
 費用明細：${detailMsg}${carNote}
 ---
 ⚠️ 本報價由 I!ne一客 系統產出，僅供參考
-⚠️ 實際依照司機跳錶收費為主
-
+⚠️ 實際依照司機跳錶收費為主`;
 
         navigator.clipboard.writeText(msg).then(() => {
             alert('預約資訊已複製！將開啟 LINE。');
