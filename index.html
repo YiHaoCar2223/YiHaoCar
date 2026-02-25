@@ -16,21 +16,17 @@
             --gold: #b45309;
         }
 
-       body {
+      body {
     font-family: 'Noto Sans TC', sans-serif;
-    /* 修改點 1：背景圖改為 fixed，並使用 contain 或更精確的定位 */
+    /* 修正 1：背景圖寬度 100% 撐滿，對齊底部 */
     background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('bg.jpg');
-    background-color: #000; /* 圖片沒跑出來時的底色 */
-    background-size: contain; /* 確保圖片比例完整顯示，不被裁切 */
-    background-position: center bottom; /* 圖片對齊螢幕最下方 */
+    background-size: 100% auto; 
+    background-position: center bottom; 
     background-repeat: no-repeat;
-    background-attachment: fixed; /* 關鍵：讓背景固定，卡片捲動時背景不動 */
-    
-    margin: 0; 
-    padding: 0; 
-    min-height: 100vh;
-    display: flex; 
-    justify-content: center;
+    background-attachment: fixed;
+    background-color: #000;
+    margin: 0; padding: 0; min-height: 100vh;
+    display: flex; justify-content: center;
     align-items: flex-start; 
 }
 
@@ -38,34 +34,33 @@
     background: var(--pure-white);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
-    width: 90%; 
-    max-width: 480px;
-    padding: 30px 20px; 
-    border-radius: 40px;
+    width: 90%; max-width: 480px;
+    padding: 30px 20px; border-radius: 40px;
     box-shadow: 0 20px 50px var(--shadow-color);
     position: relative;
     z-index: 1;
-
-    /* 修改點 2：增加頂部間距與超大底部間距 */
-    margin-top: 40px;
-    /* 這裡的 450px 是為了強迫頁面拉長，讓你在捲動到最下面時，背景的車尾燈能完整露出 */
-    margin-bottom: 450px; 
+    margin-top: 25px;
+    /* 修正 2：減少留空，讓尾燈剛好在捲動到底部時完整出現 */
+    margin-bottom: 120px; 
 }
 
-/* 針對 Logo 的修改：填滿放大、更透明、不擋地圖 */
+/* 修正 3：Logo 放大並精準切齊起點與地圖上方 */
 .main-card::before {
     content: "";
     position: absolute;
-    top: 70px;          /* 避開標題高度 */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 95%;         /* 放大寬度到填滿感 */
-    height: 280px;      /* 限制高度，使其只停留在輸入框區域，不往下擋到地圖 */
+    /* 從卡片頂部 0 開始，寬度 100% 填滿 */
+    top: 0; 
+    left: 0;
+    width: 100%; 
+    /* 高度設定為 420px，這大約是標題到地圖上方的距離，可根據實際體感微調 */
+    height: 420px; 
     background: url('Logo.jpg') no-repeat center;
-    background-size: contain; 
-    opacity: 0.08;      /* 調得更透明 (0.08 - 0.1 之間) */
+    /* 讓 Logo 在這個範圍內撐到最大但不變形 */
+    background-size: 90% auto; 
+    opacity: 0.07; /* 更透明，不干擾文字 */
     z-index: -1;
     pointer-events: none;
+    border-radius: 40px 40px 0 0; /* 配合卡片圓角 */
 }
 
         /* 原始 UI 樣式保留 */
@@ -313,6 +308,7 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
+
 
 
 
