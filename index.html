@@ -72,20 +72,50 @@
         }
         .btn-calculate:active { transform: scale(0.98); opacity: 0.9; }
 
-        .static-fee-info {
-            background: rgba(255, 255, 255, 0.6) !important; 
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            width: 100%; max-width: 480px;
-            padding: 25px 20px; border-radius: 30px;
-            margin-top: 20px; margin-bottom: 80px; 
-            box-sizing: border-box;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            position: relative; z-index: 2;
-        }
-        .fee-title { font-size: 16px; font-weight: 900; color: var(--main-blue); margin-bottom: 12px; text-align: center; }
-        .fee-row { display: flex; justify-content: space-between; font-size: 14px; color: #2d3748; margin-bottom: 6px; }
-        .fee-row b { color: #000; }
+       .static-fee-info {
+    /* 1. 降低背景不透明度，讓尾燈透出來 (0.2 - 0.4 效果最佳) */
+    background: rgba(255, 255, 255, 0.25) !important; 
+    
+    /* 2. 強化毛玻璃效果，讓背景模糊更有質感 */
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    
+    /* 3. 使用負的 margin-top 將區塊往上拉，蓋在背景圖的尾燈位置 */
+    /* 數值根據你的 bg.jpg 尾燈高度調整，-120px 是一個不錯的起點 */
+    margin-top: -120px; 
+    
+    /* 4. 確保它在最上層，並調整底部間距讓版面不擁擠 */
+    position: relative; 
+    z-index: 5;
+    margin-bottom: 100px; 
+    
+    /* 5. 邊框微調：讓邊緣有發光感，更像玻璃 */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    width: 100%; 
+    max-width: 480px;
+    padding: 25px 20px; 
+    border-radius: 30px;
+    box-sizing: border-box;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+}
+
+/* 為了閱讀性，將裡面的文字調亮 */
+.fee-title { 
+    font-size: 16px; 
+    font-weight: 900; 
+    color: #fff; /* 改成白色，在透明深色背景上較清楚 */
+    margin-bottom: 12px; 
+    text-align: center; 
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.fee-row { 
+    color: #f1f1f1; /* 調整內文顏色 */
+}
+
+.fee-row b { 
+    color: #fff; /* 調整加粗文字顏色 */
+}
 
         /* 試算結果區塊：透明磨砂 */
         .result-panel { 
@@ -309,4 +339,5 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
+
 
