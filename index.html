@@ -219,6 +219,7 @@
         const startVal = document.getElementById('start').value;
         const endVal = document.getElementById('end').value;
         const btn = document.getElementById('calc-btn');
+        const feeInfoBox = document.getElementById('fee-info-box');
         if (!startVal || !endVal) { alert('請填寫完整地址'); return; }
         
         btn.disabled = true; btn.innerText = "規劃中...";
@@ -323,6 +324,7 @@ function copyAndLine() {
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
+
 
 
 
