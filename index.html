@@ -248,6 +248,16 @@
                 document.getElementById('long-fee').innerText = "$" + longDistFee;
                 document.getElementById('time-fee').innerText = "$" + timeFee;
                 document.getElementById('price-tag').innerText = "$" + currentTotal;
+
+                feeInfoBox.innerHTML = `
+                    <div class="fee-title">📋 計費說明</div>
+                    <div class="fee-row" style="display:block; font-size:13px; line-height:1.6; color:#2d3748;">
+                        <p>🌟 隨機派遣如果搭到進口車，起步價依然是 <b>80</b> 元</p>
+                        <p>🌟 避開收費路段為可行駛台74、76、61等快速道路</p>
+                        <p>🌟 避開高速公路為行駛平面，不走國道及快速道路</p>
+                        <p>🌟 試算僅為參考，若差異過大可聯絡客服進行說明</p>
+                    </div>
+                `;
                 
                 detailMsg = finalDist.toFixed(1) + "km/" + finalTime + "min | 里程$" + baseDistFee + "+長途$" + longDistFee + "+時間$" + timeFee + "+起步$" + startFee;
                 document.getElementById('result').style.display = 'block';
@@ -313,6 +323,7 @@ function copyAndLine() {
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
+
 
 
 
