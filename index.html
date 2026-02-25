@@ -72,33 +72,22 @@
         }
         .btn-calculate:active { transform: scale(0.98); opacity: 0.9; }
 
-     .static-fee-info {
-    /* 1. 背景改為極致透明，並強化毛玻璃感 */
-    background: rgba(255, 255, 255, 0.15) !important; 
-    backdrop-filter: blur(25px) saturate(160%);
-    -webkit-backdrop-filter: blur(25px) saturate(160%);
-    
-    /* 2. 關鍵修改：取消負 Margin，改用相對定位微調 */
-    position: relative;
-    top: -40px;          /* 輕微向上位移，與上方卡片產生重疊視覺感 */
-    z-index: 0;          /* 確保層級低於主卡片 (.main-card) */
-    
-    /* 3. 調整邊界，讓它看起來是從主卡片「延伸」出來的 */
-    width: 92%;          /* 稍微縮小寬度，做出層次感 */
-    max-width: 440px;
-    margin: 0 auto 100px auto; /* 底部留白 100px 確保看得到尾燈 */
-    padding: 40px 20px 25px 20px; /* 增加上方內距，避開重疊處 */
-    
-    border-radius: 0 0 40px 40px; /* 只留下方圓角，上方與主卡片貼合 */
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-top: none;    /* 去掉頂部邊框，消除與按鈕的割裂感 */
-    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-}
+        .static-fee-info {
+            background: rgba(255, 255, 255, 0.6) !important; 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            width: 100%; max-width: 480px;
+            padding: 25px 20px; border-radius: 30px;
+            margin-top: 20px; margin-bottom: 80px; 
+            box-sizing: border-box;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative; z-index: 2;
+        }
+        .fee-title { font-size: 16px; font-weight: 900; color: var(--main-blue); margin-bottom: 12px; text-align: center; }
+        .fee-row { display: flex; justify-content: space-between; font-size: 14px; color: #2d3748; margin-bottom: 6px; }
+        .fee-row b { color: #000; }
 
-/* 為了讓文字在極透明背景下清晰 */
-.fee-title { color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-.fee-row { color: #e2e8f0; }
-.fee-row b { color: #63b3ed; } /* 讓數字變藍色，視覺更醒目 */
+        /* 試算結果區塊：透明磨砂 */
         .result-panel { 
             margin-top: 20px; padding: 25px; border-radius: 30px; 
             background: rgba(255, 255, 255, 0.15) !important; 
@@ -320,6 +309,4 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
-
-
 
