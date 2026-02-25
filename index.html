@@ -5,21 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>I!ne一客 | 優質乘車服務</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700;900&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-light: #f4f7f9;
-            --main-blue: #002d5e;
-            --accent-silver: #718096;
-            --pure-white: #ffffff;
-            --shadow-color: rgba(0, 45, 94, 0.08);
-            --line-green: #06c755;
-            --gold: #b45309;
-        }
-
-        body {
+    body {
             font-family: 'Noto Sans TC', sans-serif;
-            /* 修改點：加入圖1背景 */
-            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('bg.jpg');
+            /* 圖1：全螢幕底圖，加入深色遮罩讓文字更好讀 */
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('bg.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -29,31 +18,31 @@
         }
 
         .main-card {
-            background: rgba(255, 255, 255, 0.95); /* 稍微透明讓底圖隱約可見 */
+            /* 關鍵：將背景改為半透明白色 (0.85)，這樣才能透出底下的 bg.jpg */
+            background: rgba(255, 255, 255, 0.85); 
+            backdrop-filter: blur(10px); /* 磨砂玻璃效果，這會讓網頁質感瞬間提升 */
             width: 100%; max-width: 480px;
             padding: 30px 20px; border-radius: 40px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
             align-self: flex-start;
             position: relative;
-            overflow: hidden; /* 確保內部的圖2不超出圓角 */
+            overflow: hidden;
             z-index: 1;
         }
 
-        /* 修改點：加入圖2作為卡片背景，透明度30% */
-       /* 修改點：調整圖2作為浮水印，不再擋住底層背景 */
+        /* 圖2：修正後的浮水印邏輯 */
         .main-card::before {
             content: "";
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%); /* 居中 */
+            width: 80%;  /* 縮小 Logo 比例 */
+            height: 80%;
             background: url('Logo.jpg');
-            
-            /* --- 關鍵修改處 --- */
-            background-size: 40%;      /* 縮小 Logo 到 60%，你可以根據喜好調整 40%~80% */
-            background-repeat: no-repeat; /* 避免 Logo 重複出現鋪滿整個畫面 */
-            background-position: center;  /* 讓 Logo 居中 */
-            /* ----------------- */
-            
-            opacity: 0.15; /* 降低透明度到 15%，這樣會更像浮水印，不會吃掉文字 */
+            background-size: contain; /* 完整顯示不裁切 */
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.1; /* 降到 10% 透明度，隱隱約約最專業 */
             z-index: -1;
             pointer-events: none;
         }
@@ -369,6 +358,7 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
+
 
 
 
