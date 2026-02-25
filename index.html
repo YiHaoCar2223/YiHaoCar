@@ -40,14 +40,20 @@
         }
 
         /* 修改點：加入圖2作為卡片背景，透明度30% */
+       /* 修改點：調整圖2作為浮水印，不再擋住底層背景 */
         .main-card::before {
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             background: url('Logo.jpg');
-            background-size: cover;
-            background-position: center;
-            opacity: 0.3; /* 設定30%透明度 */
+            
+            /* --- 關鍵修改處 --- */
+            background-size: 40%;      /* 縮小 Logo 到 60%，你可以根據喜好調整 40%~80% */
+            background-repeat: no-repeat; /* 避免 Logo 重複出現鋪滿整個畫面 */
+            background-position: center;  /* 讓 Logo 居中 */
+            /* ----------------- */
+            
+            opacity: 0.15; /* 降低透明度到 15%，這樣會更像浮水印，不會吃掉文字 */
             z-index: -1;
             pointer-events: none;
         }
@@ -363,6 +369,7 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
+
 
 
 
