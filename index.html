@@ -9,13 +9,12 @@
         :root {
             --bg-light: #f4f7f9;
             --main-blue: #002d5e;
-            --accent-silver: #718096;
+            --accent-silver: #a0aec0;
             --pure-white: rgba(255, 255, 255, 0.92);
             --line-green: #06c755;
             --gold: #b45309;
         }
 
-        /* 1. 背景圖片：確保車子置底且不被捲動拉走 */
         body {
             background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('bg.jpg');
             background-size: 100% auto;
@@ -25,9 +24,9 @@
             background-color: #000;
             margin: 0; padding: 15px; min-height: 100vh;
             display: flex; flex-direction: column; align-items: center;
+            font-family: 'Noto Sans TC', sans-serif;
         }
 
-        /* 2. 主卡片視覺優化 */
         .main-card {
             background: rgba(26, 32, 44, 0.85); 
             backdrop-filter: blur(15px);
@@ -39,18 +38,6 @@
             margin-top: 20px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-sizing: border-box;
-        }
-
-        /* 3. Logo 浮水印位置修正 */
-        .main-card::before {
-            content: "";
-            position: absolute;
-            top: 20px; left: 0; width: 100%; height: 350px; 
-            background: url('Logo.jpg') no-repeat center;
-            background-size: 85% auto;
-            opacity: 0.1;
-            z-index: -1;
-            pointer-events: none;
         }
 
         .brand-zone { text-align: center; margin-bottom: 25px; }
@@ -65,6 +52,7 @@
             border: 1px solid rgba(255,255,255,0.2); border-radius: 18px; 
             font-size: 15px; background: #fff !important; color: #000 !important;
             box-sizing: border-box;
+            font-family: inherit;
         }
 
         .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
@@ -72,31 +60,27 @@
             background: rgba(255, 255, 255, 0.1); padding: 12px; border-radius: 15px;
             display: flex; align-items: center; border: 1px solid rgba(255,255,255,0.1);
         }
-        .option-item span { font-size: 13px; font-weight: 700; color: #fff; }
+        .option-item span { font-size: 13px; font-weight: 700; color: #fff; margin-left: 5px; }
         .option-full { grid-column: span 2; }
 
-        /* 修改：預約方框初始隱藏 */
-        #booking-time-container {
-            display: none;
-            margin-top: 10px;
-        }
+        #booking-time-container { display: none; margin-top: 10px; }
 
         #map { width: 100%; height: 260px; border-radius: 25px; margin: 15px 0; border: 2px solid rgba(255,255,255,0.2); }
 
         .btn-calculate { 
             width: 100%; background: #4a90e2; color: white; padding: 18px; 
             font-size: 18px; font-weight: 900; border: none; border-radius: 20px; cursor: pointer;
+            font-family: inherit;
         }
 
-        /* 修改：計費標準區塊背景透明度改為 60% (0.6) */
+        /* 修改：計費標準 60% 透明磨砂 */
         .static-fee-info {
             background: rgba(255, 255, 255, 0.6) !important; 
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             width: 100%; max-width: 480px;
             padding: 25px 20px; border-radius: 30px;
-            margin-top: 20px;
-            margin-bottom: 100px; 
+            margin-top: 20px; margin-bottom: 80px; 
             box-sizing: border-box;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             position: relative; z-index: 2;
@@ -105,12 +89,30 @@
         .fee-row { display: flex; justify-content: space-between; font-size: 14px; color: #2d3748; margin-bottom: 6px; }
         .fee-row b { color: #000; }
 
+        /* 修改：試算結果區塊改為透明磨砂且字體美化 */
         .result-panel { 
             margin-top: 20px; padding: 25px; border-radius: 30px; 
-            background: #ffffff; border: 2.5px solid #4a90e2; display: none;
+            background: rgba(255, 255, 255, 0.15); 
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            display: none;
+            color: #fff;
+            font-family: 'Noto Sans TC', sans-serif;
         }
-        .price-text { font-size: 46px; font-weight: 900; color: #002d5e; }
-        .btn-line { width: 100%; background: var(--line-green); color: white; padding: 16px; font-size: 17px; font-weight: 700; border: none; border-radius: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; }
+        .price-text { font-size: 46px; font-weight: 900; color: #63b3ed; }
+        .detail-line { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+        .detail-line span { color: var(--accent-silver); }
+        .detail-line b { color: #fff; }
+        .total-row { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; margin-top: 10px; align-items: center; }
+        
+        .btn-line { 
+            width: 100%; background: var(--line-green); color: white; padding: 16px; 
+            font-size: 17px; font-weight: 700; border: none; border-radius: 20px; 
+            display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer;
+            font-family: inherit; margin-top: 15px;
+        }
+        .copyright-line { font-size: 10px; color: var(--accent-silver); text-align: center; margin-top: 15px; opacity: 0.6; }
      </style>
 </head>
 <body>
@@ -131,7 +133,7 @@
     </div>
 
     <div class="options-grid">
-        <label class="option-item option-full option-booking">
+        <label class="option-item option-full">
             <input type="checkbox" id="enableBooking" onchange="toggleBookingTime()"> 
             <span>📅 預約行程 (預約用，非即時)</span>
         </label>
@@ -141,7 +143,7 @@
         
         <label class="option-item"><input type="checkbox" id="avoidTolls"> <span>避開收費</span></label>
         <label class="option-item"><input type="checkbox" id="avoidHighways"> <span>避開高速</span></label>
-        <label class="option-item option-full option-premium">
+        <label class="option-item option-full">
             <input type="checkbox" id="premiumCar"> <span>指定進口車 (隨機車款)</span>
         </label>
     </div>
@@ -150,105 +152,68 @@
     
     <button id="calc-btn" class="btn-calculate" onclick="calculateFare()">規劃行程並試算費用</button>
 
-    <div class="static-fee-info" id="fee-info-box">
-        <div class="fee-title">📋 計費標準</div>
-        <div class="fee-row"><span>一般起步價</span><b>80 元</b></div>
-        <div class="fee-row"><span>進口車起步價</span><b>150 元</b></div>
-        <div class="fee-row"><span>基本里程費</span><b>15 元 / km</b></div>
-        <div class="fee-row"><span>行車時間費</span><b>3 元 / min</b></div>
-        <div class="fee-row"><span>長途附加費(逾15km)</span><b>10 元 / km </b></div>
-    </div>
-
     <div id="result" class="result-panel">
-        <div style="font-size:12px; color:var(--accent-silver); font-weight:700;">預估行程與費用拆解</div>
+        <div style="font-size:12px; color:var(--accent-silver); font-weight:700; margin-bottom:15px; text-align:center;">預估行程與費用拆解</div>
         
-        <div class="detail-card">
-            <div class="detail-line"><span>需求類別</span><b id="display-type">即時出發</b></div>
-            <div class="detail-line" id="res-time-row" style="display:none;"><span>預約時間</span><b id="display-time">-</b></div>
-            
-            <div class="detail-line"><span>預估路程</span><b id="display-dist">0 km</b></div>
-            <div class="detail-line"><span>預估時間</span><b id="display-duration">0 min</b></div>
+        <div class="detail-line"><span>需求類別</span><b id="display-type">即時出發</b></div>
+        <div class="detail-line" id="res-time-row" style="display:none;"><span>預約時間</span><b id="display-time">-</b></div>
+        <div class="detail-line"><span>預估路程</span><b id="display-dist">0 km</b></div>
+        <div class="detail-line"><span>預估時間</span><b id="display-duration">0 min</b></div>
 
-            <div class="copyright-line">I!ne一客 派遣系統版權所有 | 盜用必究</div>
+        <hr style="border:0; border-top:1px dashed rgba(255,255,255,0.1); margin:15px 0;">
 
-            <hr style="border:0; border-top:1px dashed #edf2f7; margin:10px 0;">
-
-            <div class="detail-line"><span>里程費用</span><b id="dist-fee">$0</b></div>
-            <div class="detail-line"><span>長途附加</span><b id="long-fee">$0</b></div>
-            <div class="detail-line"><span>行車時間</span><b id="time-fee">$0</b></div>
-            <div class="detail-line"><span>起步車資</span><b id="display-start-fee">$80</b></div>
-            
-            <div class="detail-line total-row">
-                <span style="font-weight:900; color:var(--main-blue);">總計 </span>
-                <span id="price-tag" class="price-text">$0</span>
-            </div>
+        <div class="detail-line"><span>里程費用</span><b id="dist-fee">$0</b></div>
+        <div class="detail-line"><span>長途附加</span><b id="long-fee">$0</b></div>
+        <div class="detail-line"><span>行車時間</span><b id="time-fee">$0</b></div>
+        <div class="detail-line"><span>起步車資</span><b id="display-start-fee">$80</b></div>
+        
+        <div class="detail-line total-row">
+            <span style="font-weight:900;">總計金額</span>
+            <span id="price-tag" class="price-text">$0</span>
         </div>
         
         <button class="btn-line" onclick="copyAndLine()">
             <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" width="20"> 複製資訊並預約
         </button>
-        <div style="font-size:10px; color:var(--accent-silver); text-align:center; margin-top:12px; font-weight:bold; opacity:0.5;">
-            © I!ne一客 優質乘車服務
-        </div>
+        <div class="copyright-line">© I!ne一客 優質乘車服務 | 派遣系統版權所有</div>
     </div>
+</div>
+
+<div class="static-fee-info" id="fee-info-box">
+    <div class="fee-title">📋 計費標準</div>
+    <div class="fee-row"><span>一般起步價</span><b>80 元</b></div>
+    <div class="fee-row"><span>進口車起步價</span><b>150 元</b></div>
+    <div class="fee-row"><span>基本里程費</span><b>15 元 / km</b></div>
+    <div class="fee-row"><span>行車時間費</span><b>3 元 / min</b></div>
+    <div class="fee-row"><span>長途附加費(逾15km)</span><b>10 元 / km </b></div>
 </div>
 
 <script>
     let map, directionsService, directionsRenderer;
-    let markerStart, markerEnd, autocompleteStart, autocompleteEnd;
     let currentTotal = 0;
     let detailMsg = "";
     let finalDist = 0;
     let finalTime = 0;
-    let finalStartFee = 80;
 
     function toggleBookingTime() {
         const container = document.getElementById('booking-time-container');
         const checkbox = document.getElementById('enableBooking');
-        if (checkbox.checked) {
-            container.style.display = 'block';
-        } else {
-            container.style.display = 'none';
-        }
+        container.style.display = checkbox.checked ? 'block' : 'none';
     }
 
     function initMap() {
         directionsService = new google.maps.DirectionsService();
         directionsRenderer = new google.maps.DirectionsRenderer({ 
-            polylineOptions: { strokeColor: "#002d5e", strokeWeight: 6 } 
+            polylineOptions: { strokeColor: "#4a90e2", strokeWeight: 6 } 
         });
-        
         map = new google.maps.Map(document.getElementById("map"), { 
-            zoom: 13, 
-            center: { lat: 24.1477, lng: 120.6736 }, 
-            disableDefaultUI: true, 
-            zoomControl: true 
+            zoom: 13, center: { lat: 24.1477, lng: 120.6736 }, 
+            disableDefaultUI: true, zoomControl: true 
         });
-        
         directionsRenderer.setMap(map);
-        markerStart = new google.maps.Marker({ map: map, visible: false, label: "起" });
-        markerEnd = new google.maps.Marker({ map: map, visible: false, label: "終" });
-        
         const options = { componentRestrictions: { country: "tw" } };
-        autocompleteStart = new google.maps.places.Autocomplete(document.getElementById('start'), options);
-        autocompleteEnd = new google.maps.places.Autocomplete(document.getElementById('end'), options);
-
-        autocompleteStart.addListener('place_changed', () => { 
-            const place = autocompleteStart.getPlace(); 
-            if (place.geometry) {
-                map.panTo(place.geometry.location);
-                markerStart.setPosition(place.geometry.location);
-                markerStart.setVisible(true);
-            }
-        });
-        autocompleteEnd.addListener('place_changed', () => { 
-            const place = autocompleteEnd.getPlace(); 
-            if (place.geometry) {
-                map.panTo(place.geometry.location);
-                markerEnd.setPosition(place.geometry.location);
-                markerEnd.setVisible(true);
-            }
-        });
+        new google.maps.places.Autocomplete(document.getElementById('start'), options);
+        new google.maps.places.Autocomplete(document.getElementById('end'), options);
     }
 
     function calculateFare() {
@@ -266,9 +231,7 @@
         btn.innerText = "計算中...";
 
         directionsService.route({ 
-            origin: start, 
-            destination: end, 
-            travelMode: 'DRIVING', 
+            origin: start, destination: end, travelMode: 'DRIVING', 
             avoidTolls: document.getElementById('avoidTolls').checked, 
             avoidHighways: document.getElementById('avoidHighways').checked 
         }, (result, status) => {
@@ -281,20 +244,21 @@
                 finalDist = leg.distance.value / 1000;
                 finalTime = Math.ceil(leg.duration.value / 60);
                 
+                let startFee = isPremium ? 150 : 80;
+                let baseDistFee = Math.round(finalDist * 15);
+                let longDistFee = finalDist > 15 ? Math.floor((finalDist - 15) * 10) : 0;
+                let timeFee = finalTime * 3;
+                currentTotal = Math.floor((baseDistFee + longDistFee + timeFee + startFee) / 10) * 10;
+
                 document.getElementById('display-dist').innerText = finalDist.toFixed(1) + " km";
                 document.getElementById('display-duration').innerText = finalTime + " min";
-
-                finalStartFee = isPremium ? 150 : 80;
-                document.getElementById('display-start-fee').innerText = `$${finalStartFee}`;
-
-                let baseDistFee = Math.round(finalDist * 15);
-                let rawLongFee = finalDist > 15 ? (finalDist - 15) * 10 : 0;
-                let longDistFee = Math.floor(rawLongFee / 10) * 10; 
-                let timeFee = finalTime * 3;
-
-                currentTotal = Math.floor((baseDistFee + longDistFee + timeFee + finalStartFee) / 10) * 10;
-
+                document.getElementById('display-start-fee').innerText = `$${startFee}`;
+                document.getElementById('dist-fee').innerText = `$${baseDistFee}`;
+                document.getElementById('long-fee').innerText = `$${longDistFee}`;
+                document.getElementById('time-fee').innerText = `$${timeFee}`;
+                document.getElementById('price-tag').innerText = `$${currentTotal}`;
                 document.getElementById('display-type').innerText = isBooking ? "預約行程" : "即時出發";
+
                 if (isBooking) {
                     document.getElementById('res-time-row').style.display = 'flex';
                     document.getElementById('display-time').innerText = bookingTime.replace('T', ' ');
@@ -302,13 +266,7 @@
                     document.getElementById('res-time-row').style.display = 'none';
                 }
 
-                document.getElementById('dist-fee').innerText = `$${baseDistFee}`;
-                document.getElementById('long-fee').innerText = `$${longDistFee}`;
-                document.getElementById('time-fee').innerText = `$${timeFee}`;
-                document.getElementById('price-tag').innerText = `$${currentTotal}`;
-                
-                detailMsg = `${finalDist.toFixed(1)}km/${finalTime}min | 里程$${baseDistFee}+長途$${longDistFee}+時間$${timeFee}+起步$${finalStartFee}`;
-
+                detailMsg = `${finalDist.toFixed(1)}km/${finalTime}min | 里程$${baseDistFee}+長途$${longDistFee}+時間$${timeFee}+起步$${startFee}`;
                 document.getElementById('fee-info-box').style.display = 'none';
                 document.getElementById('result').style.display = 'block';
                 document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
@@ -329,12 +287,11 @@
 起點：${document.getElementById('start').value}
 終點：${document.getElementById('end').value}
 路程資訊：${finalDist.toFixed(1)} km / ${finalTime} min
-預估車資：$${currentTotal} (已去尾數)
+預估車資：$${currentTotal} 
 費用明細：${detailMsg}${carNote}
 ---
-⚠️ 本報價由 I!ne一客 系統產出，僅限官方 LINE 使用
-⚠️ 請認明官方 I!ne一客
-⚠️ 報價僅供參考，實際費用依派車單為準`;
+⚠️ 本報價由 I!ne一客 系統產出，僅供參考
+⚠️ 實際依照司機跳錶收費為主
 
         navigator.clipboard.writeText(msg).then(() => {
             alert('預約資訊已複製！將開啟 LINE。');
