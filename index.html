@@ -75,6 +75,12 @@
         .option-item span { font-size: 13px; font-weight: 700; color: #fff; }
         .option-full { grid-column: span 2; }
 
+        /* 修改：預約方框初始隱藏 */
+        #booking-time-container {
+            display: none;
+            margin-top: 10px;
+        }
+
         #map { width: 100%; height: 260px; border-radius: 25px; margin: 15px 0; border: 2px solid rgba(255,255,255,0.2); }
 
         .btn-calculate { 
@@ -82,15 +88,15 @@
             font-size: 18px; font-weight: 900; border: none; border-radius: 20px; cursor: pointer;
         }
 
-        /* 【關鍵修正】4. 計費標準：半透明磨砂，並留出底部空間讓尾燈透出來 */
+        /* 修改：計費標準區塊背景透明度改為 60% (0.6) */
         .static-fee-info {
-            background: rgba(255, 255, 255, 0.75) !important; /* 降低不透明度 */
+            background: rgba(255, 255, 255, 0.6) !important; 
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             width: 100%; max-width: 480px;
             padding: 25px 20px; border-radius: 30px;
             margin-top: 20px;
-            margin-bottom: 100px; /* 增加底部間距，讓它「浮」在尾燈上方而不是「遮死」 */
+            margin-bottom: 100px; 
             box-sizing: border-box;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             position: relative; z-index: 2;
@@ -279,7 +285,7 @@
                 document.getElementById('display-duration').innerText = finalTime + " min";
 
                 finalStartFee = isPremium ? 150 : 80;
-                document.getElementById('display-start-fee').innerText = $${finalStartFee};
+                document.getElementById('display-start-fee').innerText = `$${finalStartFee}`;
 
                 let baseDistFee = Math.round(finalDist * 15);
                 let rawLongFee = finalDist > 15 ? (finalDist - 15) * 10 : 0;
@@ -296,12 +302,12 @@
                     document.getElementById('res-time-row').style.display = 'none';
                 }
 
-                document.getElementById('dist-fee').innerText = $${baseDistFee};
-                document.getElementById('long-fee').innerText = $${longDistFee};
-                document.getElementById('time-fee').innerText = $${timeFee};
-                document.getElementById('price-tag').innerText = $${currentTotal};
+                document.getElementById('dist-fee').innerText = `$${baseDistFee}`;
+                document.getElementById('long-fee').innerText = `$${longDistFee}`;
+                document.getElementById('time-fee').innerText = `$${timeFee}`;
+                document.getElementById('price-tag').innerText = `$${currentTotal}`;
                 
-                detailMsg = ${finalDist.toFixed(1)}km/${finalTime}min | 里程$${baseDistFee}+長途$${longDistFee}+時間$${timeFee}+起步$${finalStartFee};
+                detailMsg = `${finalDist.toFixed(1)}km/${finalTime}min | 里程$${baseDistFee}+長途$${longDistFee}+時間$${timeFee}+起步$${finalStartFee}`;
 
                 document.getElementById('fee-info-box').style.display = 'none';
                 document.getElementById('result').style.display = 'block';
