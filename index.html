@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>YiHaoCar | 尊榮座駕派遣系統</title>
+    <title>I!ne | 優質乘車服務</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -89,7 +89,7 @@
         }
 
         .result-panel::before {
-            content: "YiHaoCar 正版系統";
+            content: "I!ne 正版系統";
             position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%) rotate(-25deg);
             font-size: 32px; font-weight: 900;
@@ -101,7 +101,6 @@
         .detail-line { display: flex; justify-content: space-between; font-size: 13px; color: #4a5568; margin-bottom: 8px; }
         .detail-line b { color: #1a202c; font-weight: 700; }
         
-        /* 版權中間行樣式 */
         .copyright-line { 
             font-size: 10px; 
             color: var(--accent-silver); 
@@ -119,11 +118,10 @@
     </style>
 </head>
 <body>
-
 <div class="main-card">
     <div class="brand-zone">
-        <h1 class="brand-logo">YiHaoCar</h1>
-        <div class="brand-tagline">尊榮座駕派遣</div>
+        <h1 class="brand-logo">I!ne</h1>
+        <div class="brand-tagline">優質乘車服務</div>
     </div>
 
     <div class="form-group">
@@ -148,7 +146,7 @@
         <label class="option-item"><input type="checkbox" id="avoidTolls"> <span>避開收費</span></label>
         <label class="option-item"><input type="checkbox" id="avoidHighways"> <span>避開高速</span></label>
         <label class="option-item option-full option-premium">
-            <input type="checkbox" id="premiumCar"> <span>指定進口車 (隨機車款)起步價$150</span>
+            <input type="checkbox" id="premiumCar"> <span>指定進口車 (隨機車款)</span>
         </label>
     </div>
 
@@ -159,6 +157,7 @@
     <div class="static-fee-info" id="fee-info-box">
         <div class="fee-title">📋 計費標準</div>
         <div class="fee-row"><span>一般起步價</span><b>80 元</b></div>
+        <div class="fee-row"><span>進口車起步價</span><b>150 元</b></div>
         <div class="fee-row"><span>基本里程費</span><b>15 元 / km</b></div>
         <div class="fee-row"><span>行車時間費</span><b>3 元 / min</b></div>
         <div class="fee-row"><span>長途附加費(逾15km)</span><b>10 元 / km </b></div>
@@ -174,7 +173,7 @@
             <div class="detail-line"><span>預估路程</span><b id="display-dist">0 km</b></div>
             <div class="detail-line"><span>預估時間</span><b id="display-duration">0 min</b></div>
 
-            <div class="copyright-line">YiHaoCar 派遣系統版權所有 | 盜用必究</div>
+            <div class="copyright-line">I!ne 派遣系統版權所有 | 盜用必究</div>
 
             <hr style="border:0; border-top:1px dashed #edf2f7; margin:10px 0;">
 
@@ -193,7 +192,7 @@
             <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" width="20"> 複製資訊並預約
         </button>
         <div style="font-size:10px; color:var(--accent-silver); text-align:center; margin-top:12px; font-weight:bold; opacity:0.5;">
-            © YiHaoCar 派遣系統
+            © I!ne 優質乘車服務
         </div>
     </div>
 </div>
@@ -329,7 +328,7 @@
         const bookingTime = isBooking ? document.getElementById('pickupTime').value.replace('T', ' ') : "即時出發";
         let carNote = isPremium ? "\n🌟 需求：指定進口車 (隨機車款)" : "";
 
-        const msg = `【YiHaoCar 尊榮派遣預約】
+        const msg = `【I!ne 優質乘車預約】
 預約時間：${bookingTime}
 起點：${document.getElementById('start').value}
 終點：${document.getElementById('end').value}
@@ -337,8 +336,8 @@
 預估車資：$${currentTotal} (已去尾數)
 費用明細：${detailMsg}${carNote}
 ---
-⚠️ 本報價由 YiHaoCar 系統產出，僅限官方 LINE 使用
-⚠️ 請認明官方 YiHaoCar
+⚠️ 本報價由 I!ne 系統產出，僅限官方 LINE 使用
+⚠️ 請認明官方 I!ne
 ⚠️ 報價僅供參考，實際費用依派車單為準`;
 
         navigator.clipboard.writeText(msg).then(() => {
@@ -347,7 +346,6 @@
         });
     }
 </script>
-
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
