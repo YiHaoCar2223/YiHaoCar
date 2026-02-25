@@ -115,7 +115,7 @@
         }
         .price-text { font-size: 46px; font-weight: 900; color: #002d5e; }
         .btn-line { width: 100%; background: var(--line-green); color: white; padding: 16px; border-radius: 20px; border: none; font-weight: 700; }
-   </style>
+    </style>
 </head>
 <body>
 <div class="main-card">
@@ -137,11 +137,12 @@
     <div class="options-grid">
         <label class="option-item option-full option-booking">
             <input type="checkbox" id="enableBooking" onchange="toggleBookingTime()"> 
-            <span> 預約行程 (預約用，非即時)</span>
+            <span>📅 預約行程 (預約用，非即時)</span>
         </label>
         <div id="booking-time-container" class="form-group option-full">
             <input type="datetime-local" id="pickupTime" class="input-box">
         </div>
+        
         <label class="option-item"><input type="checkbox" id="avoidTolls"> <span>避開收費</span></label>
         <label class="option-item"><input type="checkbox" id="avoidHighways"> <span>避開高速</span></label>
         <label class="option-item option-full option-premium">
@@ -154,7 +155,7 @@
     <button id="calc-btn" class="btn-calculate" onclick="calculateFare()">規劃行程並試算費用</button>
 
     <div class="static-fee-info" id="fee-info-box">
-        <div class="fee-title"> 計費標準</div>
+        <div class="fee-title">📋 計費標準</div>
         <div class="fee-row"><span>一般起步價</span><b>80 元</b></div>
         <div class="fee-row"><span>進口車起步價</span><b>150 元</b></div>
         <div class="fee-row"><span>基本里程費</span><b>15 元 / km</b></div>
@@ -164,9 +165,11 @@
 
     <div id="result" class="result-panel">
         <div style="font-size:12px; color:var(--accent-silver); font-weight:700;">預估行程與費用拆解</div>
+        
         <div class="detail-card">
             <div class="detail-line"><span>需求類別</span><b id="display-type">即時出發</b></div>
             <div class="detail-line" id="res-time-row" style="display:none;"><span>預約時間</span><b id="display-time">-</b></div>
+            
             <div class="detail-line"><span>預估路程</span><b id="display-dist">0 km</b></div>
             <div class="detail-line"><span>預估時間</span><b id="display-duration">0 min</b></div>
 
@@ -184,35 +187,72 @@
                 <span id="price-tag" class="price-text">$0</span>
             </div>
         </div>
+        
         <button class="btn-line" onclick="copyAndLine()">
             <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" width="20"> 複製資訊並預約
         </button>
-        <div style="font-size:10px; color:var(--accent-silver); text-align:center; margin-top:12px; font-weight:bold; opacity:0.5;">© I!ne一客 優質乘車服務</div>
+        <div style="font-size:10px; color:var(--accent-silver); text-align:center; margin-top:12px; font-weight:bold; opacity:0.5;">
+            © I!ne一客 優質乘車服務
+        </div>
     </div>
 </div>
 
 <script>
     let map, directionsService, directionsRenderer;
-    let finalDist = 0, finalTime = 0, currentTotal = 0, detailMsg = "";
+    let markerStart, markerEnd, autocompleteStart, autocompleteEnd;
+    let currentTotal = 0;
+    let detailMsg = "";
+    let finalDist = 0;
+    let finalTime = 0;
+    let finalStartFee = 80;
 
     function toggleBookingTime() {
         const container = document.getElementById('booking-time-container');
-        document.getElementById('enableBooking').checked ? container.style.display = 'block' : container.style.display = 'none';
+        const checkbox = document.getElementById('enableBooking');
+        if (checkbox.checked) {
+            container.style.display = 'block';
+        } else {
+            container.style.display = 'none';
+        }
     }
 
     function initMap() {
         directionsService = new google.maps.DirectionsService();
-        directionsRenderer = new google.maps.DirectionsRenderer({ polylineOptions: { strokeColor: "#002d5e", strokeWeight: 6 } });
+        directionsRenderer = new google.maps.DirectionsRenderer({ 
+            polylineOptions: { strokeColor: "#002d5e", strokeWeight: 6 } 
+        });
+        
         map = new google.maps.Map(document.getElementById("map"), { 
             zoom: 13, 
             center: { lat: 24.1477, lng: 120.6736 }, 
             disableDefaultUI: true, 
             zoomControl: true 
         });
+        
         directionsRenderer.setMap(map);
+        markerStart = new google.maps.Marker({ map: map, visible: false, label: "起" });
+        markerEnd = new google.maps.Marker({ map: map, visible: false, label: "終" });
+        
         const options = { componentRestrictions: { country: "tw" } };
-        new google.maps.places.Autocomplete(document.getElementById('start'), options);
-        new google.maps.places.Autocomplete(document.getElementById('end'), options);
+        autocompleteStart = new google.maps.places.Autocomplete(document.getElementById('start'), options);
+        autocompleteEnd = new google.maps.places.Autocomplete(document.getElementById('end'), options);
+
+        autocompleteStart.addListener('place_changed', () => { 
+            const place = autocompleteStart.getPlace(); 
+            if (place.geometry) {
+                map.panTo(place.geometry.location);
+                markerStart.setPosition(place.geometry.location);
+                markerStart.setVisible(true);
+            }
+        });
+        autocompleteEnd.addListener('place_changed', () => { 
+            const place = autocompleteEnd.getPlace(); 
+            if (place.geometry) {
+                map.panTo(place.geometry.location);
+                markerEnd.setPosition(place.geometry.location);
+                markerEnd.setVisible(true);
+            }
+        });
     }
 
     function calculateFare() {
@@ -224,61 +264,84 @@
         const btn = document.getElementById('calc-btn');
 
         if (!start || !end) return alert('請填寫完整地址');
-        if (isBooking && !bookingTime) return alert('請輸入時間');
+        if (isBooking && !bookingTime) return alert('請輸入預約時間');
         
-        btn.disabled = true; btn.innerText = "計算中...";
+        btn.disabled = true;
+        btn.innerText = "計算中...";
 
         directionsService.route({ 
             origin: start, 
             destination: end, 
-            travelMode: 'DRIVING',
-            avoidTolls: document.getElementById('avoidTolls').checked,
-            avoidHighways: document.getElementById('avoidHighways').checked
+            travelMode: 'DRIVING', 
+            avoidTolls: document.getElementById('avoidTolls').checked, 
+            avoidHighways: document.getElementById('avoidHighways').checked 
         }, (result, status) => {
-            btn.disabled = false; btn.innerText = "規劃行程並試算費用";
+            btn.disabled = false;
+            btn.innerText = "規劃行程並試算費用";
+
             if (status == 'OK') {
                 directionsRenderer.setDirections(result);
                 const leg = result.routes[0].legs[0];
                 finalDist = leg.distance.value / 1000;
                 finalTime = Math.ceil(leg.duration.value / 60);
                 
-                let startFee = isPremium ? 150 : 80;
-                let baseDistFee = Math.round(finalDist * 15);
-                let longDistFee = finalDist > 15 ? Math.floor((finalDist - 15) * 10) : 0;
-                let timeFee = finalTime * 3;
-                
-                currentTotal = Math.floor((baseDistFee + longDistFee + timeFee + startFee) / 10) * 10;
-
                 document.getElementById('display-dist').innerText = finalDist.toFixed(1) + " km";
                 document.getElementById('display-duration').innerText = finalTime + " min";
-                document.getElementById('display-start-fee').innerText = `$${startFee}`;
-                document.getElementById('dist-fee').innerText = `$${baseDistFee}`;
-                document.getElementById('long-fee').innerText = `$${longDistFee}`;
-                document.getElementById('time-fee').innerText = `$${timeFee}`;
-                document.getElementById('price-tag').innerText = `$${currentTotal}`;
+
+                finalStartFee = isPremium ? 150 : 80;
+                document.getElementById('display-start-fee').innerText = $${finalStartFee};
+
+                let baseDistFee = Math.round(finalDist * 15);
+                let rawLongFee = finalDist > 15 ? (finalDist - 15) * 10 : 0;
+                let longDistFee = Math.floor(rawLongFee / 10) * 10; 
+                let timeFee = finalTime * 3;
+
+                currentTotal = Math.floor((baseDistFee + longDistFee + timeFee + finalStartFee) / 10) * 10;
+
                 document.getElementById('display-type').innerText = isBooking ? "預約行程" : "即時出發";
-                
-                if(isBooking) {
+                if (isBooking) {
                     document.getElementById('res-time-row').style.display = 'flex';
                     document.getElementById('display-time').innerText = bookingTime.replace('T', ' ');
                 } else {
                     document.getElementById('res-time-row').style.display = 'none';
                 }
 
-                detailMsg = `${finalDist.toFixed(1)}km/${finalTime}min | 里程$${baseDistFee}+長途$${longDistFee}+時間$${timeFee}+起步$${startFee}`;
+                document.getElementById('dist-fee').innerText = $${baseDistFee};
+                document.getElementById('long-fee').innerText = $${longDistFee};
+                document.getElementById('time-fee').innerText = $${timeFee};
+                document.getElementById('price-tag').innerText = $${currentTotal};
+                
+                detailMsg = ${finalDist.toFixed(1)}km/${finalTime}min | 里程$${baseDistFee}+長途$${longDistFee}+時間$${timeFee}+起步$${finalStartFee};
+
                 document.getElementById('fee-info-box').style.display = 'none';
                 document.getElementById('result').style.display = 'block';
                 document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
-            } else { alert('路徑規劃失敗'); }
+            } else {
+                alert('規劃失敗');
+            }
         });
     }
 
     function copyAndLine() {
+        const isPremium = document.getElementById('premiumCar').checked;
         const isBooking = document.getElementById('enableBooking').checked;
         const bookingTime = isBooking ? document.getElementById('pickupTime').value.replace('T', ' ') : "即時出發";
-        const msg = `【I!ne一客 乘車預約】\n預約時間：${bookingTime}\n起點：${document.getElementById('start').value}\n終點：${document.getElementById('end').value}\n路程資訊：${finalDist.toFixed(1)} km / ${finalTime} min\n預估費用：$${currentTotal}\n費用明細：${detailMsg}\n--- 報價僅供參考，實際依派車單為準`;
+        let carNote = isPremium ? "\n🌟 需求：指定進口車 (隨機車款)" : "";
+
+        const msg = `【I!ne一客 優質乘車預約】
+預約時間：${bookingTime}
+起點：${document.getElementById('start').value}
+終點：${document.getElementById('end').value}
+路程資訊：${finalDist.toFixed(1)} km / ${finalTime} min
+預估車資：$${currentTotal} (已去尾數)
+費用明細：${detailMsg}${carNote}
+---
+⚠️ 本報價由 I!ne一客 系統產出，僅限官方 LINE 使用
+⚠️ 請認明官方 I!ne一客
+⚠️ 報價僅供參考，實際費用依派車單為準`;
+
         navigator.clipboard.writeText(msg).then(() => {
-            alert('資訊已複製！將開啟 LINE。');
+            alert('預約資訊已複製！將開啟 LINE。');
             window.location.href = "https://lin.ee/o8sVnUW";
         });
     }
@@ -286,5 +349,3 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
-
-
