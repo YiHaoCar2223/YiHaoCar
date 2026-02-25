@@ -42,11 +42,11 @@
         /* --- 修正後的浮水印：墊在文字底下 --- */
         .bg-watermark {
             position: absolute;
-            top: 5%; /* 讓它出現在輸入框與選項的區域 */
+            top: 15%; /* 讓它出現在輸入框與選項的區域 */
             left: 50%;
             transform: translate(-50%, 0);
             width: 110%;
-            opacity: 0.1; /* 10% 透明度 */
+            opacity: 0.12; /* 10% 透明度 */
             z-index: -1; /* 關鍵：讓它在文字與輸入框的後方 */
             pointer-events: none;
         }
@@ -326,6 +326,7 @@ function copyAndLine() {
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
+
 
 
 
