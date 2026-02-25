@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>I!ne | 優質乘車服務</title>
+    <title>I!ne一客 | 優質乘車服務</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -120,7 +120,7 @@
 <body>
 <div class="main-card">
     <div class="brand-zone">
-        <h1 class="brand-logo">I!ne</h1>
+        <h1 class="brand-logo">I!ne一客</h1>
         <div class="brand-tagline">優質乘車服務</div>
     </div>
 
@@ -192,7 +192,7 @@
             <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" width="20"> 複製資訊並預約
         </button>
         <div style="font-size:10px; color:var(--accent-silver); text-align:center; margin-top:12px; font-weight:bold; opacity:0.5;">
-            © I!ne 優質乘車服務
+            © I!ne一客|優質乘車服務
         </div>
     </div>
 </div>
@@ -328,7 +328,7 @@
         const bookingTime = isBooking ? document.getElementById('pickupTime').value.replace('T', ' ') : "即時出發";
         let carNote = isPremium ? "\n🌟 需求：指定進口車 (隨機車款)" : "";
 
-        const msg = `【I!ne 優質乘車預約】
+        const msg = `【I!ne一客 優質乘車預約】
 預約時間：${bookingTime}
 起點：${document.getElementById('start').value}
 終點：${document.getElementById('end').value}
@@ -336,8 +336,8 @@
 預估車資：$${currentTotal} (已去尾數)
 費用明細：${detailMsg}${carNote}
 ---
-⚠️ 本報價由 I!ne 系統產出，僅限官方 LINE 使用
-⚠️ 請認明官方 I!ne
+⚠️ 本報價由 I!ne一客 系統產出，僅限官方 LINE 使用
+⚠️ 請認明官方 I!ne一客
 ⚠️ 報價僅供參考，實際費用依派車單為準`;
 
         navigator.clipboard.writeText(msg).then(() => {
@@ -349,6 +349,7 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
+
 
 
 
