@@ -7,12 +7,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-light: #f4f7f9;
             --main-blue: #002d5e;
             --accent-silver: #a0aec0;
-            --pure-white: rgba(255, 255, 255, 0.92);
             --line-green: #06c755;
-            --gold: #b45309;
         }
 
         body {
@@ -58,11 +55,12 @@
         .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .option-item {
             background: rgba(255, 255, 255, 0.1); padding: 12px; border-radius: 15px;
-            display: flex; align-items: center; border: 1px solid rgba(255,255,255,0.1);
+            display: flex; align-items: center; border: 1px solid rgba(255,255,255,0.1); cursor: pointer;
         }
         .option-item span { font-size: 13px; font-weight: 700; color: #fff; margin-left: 5px; }
         .option-full { grid-column: span 2; }
 
+        /* 預約方框初始隱藏 */
         #booking-time-container { display: none; margin-top: 10px; }
 
         #map { width: 100%; height: 260px; border-radius: 25px; margin: 15px 0; border: 2px solid rgba(255,255,255,0.2); }
@@ -98,7 +96,6 @@
             border: 1px solid rgba(255, 255, 255, 0.2); 
             display: none;
             color: #fff;
-            font-family: 'Noto Sans TC', sans-serif;
         }
         .price-text { font-size: 46px; font-weight: 900; color: #63b3ed; }
         .detail-line { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
@@ -113,7 +110,7 @@
             font-family: inherit; margin-top: 15px;
         }
         .copyright-line { font-size: 10px; color: var(--accent-silver); text-align: center; margin-top: 15px; opacity: 0.6; }
-     </style>
+    </style>
 </head>
 <body>
 <div class="main-card">
@@ -252,11 +249,11 @@
 
                 document.getElementById('display-dist').innerText = finalDist.toFixed(1) + " km";
                 document.getElementById('display-duration').innerText = finalTime + " min";
-                document.getElementById('display-start-fee').innerText = `$${startFee}`;
-                document.getElementById('dist-fee').innerText = `$${baseDistFee}`;
-                document.getElementById('long-fee').innerText = `$${longDistFee}`;
-                document.getElementById('time-fee').innerText = `$${timeFee}`;
-                document.getElementById('price-tag').innerText = `$${currentTotal}`;
+                document.getElementById('display-start-fee').innerText = "$" + startFee;
+                document.getElementById('dist-fee').innerText = "$" + baseDistFee;
+                document.getElementById('long-fee').innerText = "$" + longDistFee;
+                document.getElementById('time-fee').innerText = "$" + timeFee;
+                document.getElementById('price-tag').innerText = "$" + currentTotal;
                 document.getElementById('display-type').innerText = isBooking ? "預約行程" : "即時出發";
 
                 if (isBooking) {
@@ -266,7 +263,7 @@
                     document.getElementById('res-time-row').style.display = 'none';
                 }
 
-                detailMsg = `${finalDist.toFixed(1)}km/${finalTime}min | 里程$${baseDistFee}+長途$${longDistFee}+時間$${timeFee}+起步$${startFee}`;
+                detailMsg = finalDist.toFixed(1) + "km/" + finalTime + "min | 里程$" + baseDistFee + "+長途$" + longDistFee + "+時間$" + timeFee + "+起步$" + startFee;
                 document.getElementById('fee-info-box').style.display = 'none';
                 document.getElementById('result').style.display = 'block';
                 document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
@@ -292,6 +289,7 @@
 ---
 ⚠️ 本報價由 I!ne一客 系統產出，僅供參考
 ⚠️ 實際依照司機跳錶收費為主
+
 
         navigator.clipboard.writeText(msg).then(() => {
             alert('預約資訊已複製！將開啟 LINE。');
