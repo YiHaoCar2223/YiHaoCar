@@ -109,7 +109,6 @@
             font-weight: 300;
         }
 
-        /* 置中長途提示 */
         .long-distance-notice-box {
             font-size: 20px;
             font-weight: 700;
@@ -120,14 +119,12 @@
             padding: 10px;
         }
 
-        /* 中長途提醒小字 (1050-1999) */
         .mid-distance-msg {
             font-size: 14px;
             color: #ffd700;
             text-align: center;
-            margin-top: -10px;
-            margin-bottom: 15px;
-            font-weight: 700;
+            margin-bottom: 10px;
+            font-weight: 400;
         }
 
         .btn-line { 
@@ -190,7 +187,8 @@
             <div id="price-tag" class="price-text">$0</div>
             
             <div id="mid-distance-notice" class="mid-distance-msg" style="display:none;">
-                已達中長途標準 請至對話資訊索取優惠
+                🌟已達中長途標準🌟<br>
+                請至對話資訊索取優惠
             </div>
 
             <div id="long-distance-notice" class="long-distance-notice-box" style="display:none;">
@@ -264,26 +262,19 @@
                 const longNotice = document.getElementById('long-distance-notice');
                 const midNotice = document.getElementById('mid-distance-notice');
 
-                // 分段顯示邏輯
                 if (currentTotal >= 2000) {
-                    // 大於 2000：隱藏數字，顯示三行置中提示
                     priceTag.style.display = 'none';
                     rangeDisplay.style.display = 'none';
                     midNotice.style.display = 'none';
                     longNotice.style.display = 'block';
                 } else if (currentTotal >= 1050) {
-                    // 1050 ~ 1999：顯示數字，顯示中長途提醒
+                    // 區間：1050 ~ 1999 -> 隱藏預估範圍
                     priceTag.style.display = 'block';
-                    rangeDisplay.style.display = 'block';
+                    rangeDisplay.style.display = 'none'; // 修改處：取消顯示預估範圍
                     midNotice.style.display = 'block';
                     longNotice.style.display = 'none';
-                    
                     priceTag.innerText = "$" + currentTotal;
-                    let minRange = Math.floor((currentTotal * 0.9) / 10) * 10;
-                    let maxRange = Math.ceil((currentTotal * 1.1) / 10) * 10;
-                    rangeDisplay.innerText = `( 視路況預估範圍：$${minRange} - $${maxRange} )`;
                 } else {
-                    // 低於 1050：僅顯示數字與範圍
                     priceTag.style.display = 'block';
                     rangeDisplay.style.display = 'block';
                     midNotice.style.display = 'none';
@@ -351,6 +342,7 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
+
 
 
 
