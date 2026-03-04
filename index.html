@@ -31,23 +31,22 @@
             width: 100%; max-width: 480px;
             padding: 30px 20px; border-radius: 40px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            position: relative; /* 為了讓內部的浮水印定位 */
+            position: relative;
             z-index: 1;
             margin-top: 20px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-sizing: border-box;
-            overflow: hidden; /* 防止浮水印超出範圍 */
+            overflow: hidden;
         }
 
-        /* --- 修正後的浮水印：墊在文字底下 --- */
         .bg-watermark {
             position: absolute;
-            top: 14%; /* 讓它出現在輸入框與選項的區域 */
+            top: 14%;
             left: 50%;
             transform: translate(-50%, 0);
             width: 110%;
-            opacity: 0.12; /* 10% 透明度 */
-            z-index: -1; /* 關鍵：讓它在文字與輸入框的後方 */
+            opacity: 0.12;
+            z-index: -1;
             pointer-events: none;
         }
         .bg-watermark img { width: 100%; height: auto; }
@@ -90,27 +89,37 @@
             font-family: inherit; transition: 0.3s;
         }
 
-        /* 試算結果 */
         .result-panel { 
             margin-top: 20px; padding: 25px; border-radius: 30px; 
             background: rgba(255, 255, 255, 0.15) !important; 
             backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.2); 
             display: none; color: #fff;
         }
-        .price-text { font-size: 46px; font-weight: 900; color: #63b3ed; }
+        
+        .price-text { font-size: 46px; font-weight: 900; color: #63b3ed; text-align: center; display: block; width: 100%; }
         .detail-line { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
         
-        /* 新增：預估範圍小字樣式 */
         .price-range-small {
             font-size: 13px;
             color: rgba(255, 255, 255, 0.6);
-            text-align: right;
-            margin-top: -5px;
+            text-align: center;
+            margin-top: 5px;
             margin-bottom: 15px;
             font-weight: 300;
         }
+
+        .long-distance-notice-box {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffd700;
+            text-align: center;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px dashed rgba(255, 215, 0, 0.3);
+            border-radius: 15px;
+        }
         
-        /* 計費標準區塊 */
         .static-fee-info {
             background: rgba(255, 255, 255, 0.6) !important; 
             backdrop-filter: blur(10px);
@@ -184,11 +193,14 @@
         <div class="detail-line"><span>長途附加</span><b id="long-fee">$0</b></div>
         <div class="detail-line"><span>行車時間</span><b id="time-fee">$0</b></div>
         <div class="detail-line"><span>起步車資</span><b id="display-start-fee">$80</b></div>
-        <div class="detail-line total-row" style="align-items: center;">
-            <span style="font-weight:900;">總計金額</span>
-            <span id="price-tag" class="price-text">$0</span>
+        
+        <div class="total-display-area" style="margin-top: 15px;">
+            <div id="price-tag" class="price-text">$0</div>
+            <div id="long-distance-notice" class="long-distance-notice-box" style="display:none;">
+                已達長途標準 請複製資訊至對話框與客服人員索取直收優惠價
+            </div>
+            <div id="price-range-display" class="price-range-small"></div>
         </div>
-        <div id="price-range-display" class="price-range-small"></div>
 
         <button class="btn-line" onclick="copyAndLine()">
             <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" width="20"> 複製資訊並預約
@@ -249,7 +261,7 @@
                 
                 let startFee = document.getElementById('premiumCar').checked ? 150 : 80;
                 let baseDistFee = Math.round(finalDist * 15);
-                let intDist = Math.floor(finalDist); // 長途不計小數點
+                let intDist = Math.floor(finalDist); 
                 let longDistFee = intDist > 15 ? (intDist - 15) * 10 : 0;
                 let timeFee = finalTime * 3;
                 currentTotal = Math.floor((baseDistFee + longDistFee + timeFee + startFee) / 10) * 10;
@@ -260,13 +272,26 @@
                 document.getElementById('dist-fee').innerText = "$" + baseDistFee;
                 document.getElementById('long-fee').innerText = "$" + longDistFee;
                 document.getElementById('time-fee').innerText = "$" + timeFee;
-                document.getElementById('price-tag').innerText = "$" + currentTotal;
 
-                // --- 僅新增：計算並顯示預估範圍 (±10%) ---
-                let minRange = Math.floor((currentTotal * 0.9) / 10) * 10;
-                let maxRange = Math.ceil((currentTotal * 1.1) / 10) * 10;
-                document.getElementById('price-range-display').innerText = `( 視路況預估範圍：$${minRange} - $${maxRange} )`;
-                // ------------------------------------
+                const priceTag = document.getElementById('price-tag');
+                const rangeDisplay = document.getElementById('price-range-display');
+                const longNotice = document.getElementById('long-distance-notice');
+
+                // 當車資大於等於 2000 時，金額與範圍均隱藏
+                if (currentTotal >= 2000) {
+                    priceTag.style.display = 'none';
+                    rangeDisplay.style.display = 'none';
+                    longNotice.style.display = 'block';
+                } else {
+                    priceTag.style.display = 'block';
+                    rangeDisplay.style.display = 'block';
+                    longNotice.style.display = 'none';
+                    
+                    priceTag.innerText = "$" + currentTotal;
+                    let minRange = Math.floor((currentTotal * 0.9) / 10) * 10;
+                    let maxRange = Math.ceil((currentTotal * 1.1) / 10) * 10;
+                    rangeDisplay.innerText = `( 視路況預估範圍：$${minRange} - $${maxRange} )`;
+                }
 
                 feeInfoBox.innerHTML = `
                     <div class="fee-title">📋 計費說明</div>
@@ -287,29 +312,25 @@
         });
     }
 
-function copyAndLine() {
+    function copyAndLine() {
         const isPremium = document.getElementById('premiumCar').checked;
         const isBooking = document.getElementById('enableBooking').checked;
         const isAvoidTolls = document.getElementById('avoidTolls').checked;
         const isAvoidHighways = document.getElementById('avoidHighways').checked;
         
-        // 處理預約時間，若勾選預約但未填時間，給予提示
         let bookingTime = "即時出發";
         if (isBooking) {
             const timeVal = document.getElementById('pickupTime').value;
             bookingTime = timeVal ? timeVal.replace('T', ' ') : "未設定預約時間";
         }
         
-        // 1. 建立需求清單
         let requirements = [];
         if (isPremium) requirements.push("指定進口車");
         if (isAvoidTolls) requirements.push("避開收費道路");
         if (isAvoidHighways) requirements.push("避開國道收費路段");
 
-        // 2. 格式化需求字串 (如果清單不為空，則換行並加上星號標記)
         let carNote = requirements.length > 0 ? `\n🌟 需求：${requirements.join('、')}` : "";
 
-        // 3. 組合最終訊息 (確保包含 ${carNote})
         const msg = `【共乘行程確認】
 預約時間：${bookingTime}
 起點：${document.getElementById('start').value}
@@ -318,7 +339,6 @@ function copyAndLine() {
 ---
 ⚠️ 本報價由 I!ne一客 AI 系統產出，僅供參考; ${carNote}`;
 
-        // 執行複製
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(msg).then(() => {
                 alert('資訊已複製，請至 Line 貼上訊息！'); 
@@ -328,7 +348,6 @@ function copyAndLine() {
                 alert('複製失敗，請手動截圖');
             });
         } else {
-            // 備用方案：針對某些手機瀏覽器不支援 clipboard API 的處理
             const textArea = document.createElement("textarea");
             textArea.value = msg;
             document.body.appendChild(textArea);
@@ -343,10 +362,6 @@ function copyAndLine() {
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
-
-
-
-
 
 
 
