@@ -100,6 +100,16 @@
         .price-text { font-size: 46px; font-weight: 900; color: #63b3ed; }
         .detail-line { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
         
+        /* 新增：預估範圍小字樣式 */
+        .price-range-small {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            text-align: right;
+            margin-top: -5px;
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+        
         /* 計費標準區塊 */
         .static-fee-info {
             background: rgba(255, 255, 255, 0.6) !important; 
@@ -121,19 +131,6 @@
             display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer;
             margin-top: 15px;
         }
-        /* 新增預估範圍文字樣式 */
-.range-text {
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.6);
-    margin-top: -5px;
-    text-align: right;
-    font-weight: 300;
-}
-
-/* 調整一下原本總計列的排版 */
-.total-row {
-    flex-wrap: wrap; /* 讓內容可以換行顯示範圍 */
-}
     </style>
 </head>
 <body>
@@ -187,13 +184,12 @@
         <div class="detail-line"><span>長途附加</span><b id="long-fee">$0</b></div>
         <div class="detail-line"><span>行車時間</span><b id="time-fee">$0</b></div>
         <div class="detail-line"><span>起步車資</span><b id="display-start-fee">$80</b></div>
-        <div class="detail-line total-row">
-    <span style="font-weight:900;">總計金額</span>
-    <span id="price-tag" class="price-text">$0</span>
-</div>
-<div id="price-range" class="range-text" style="width: 100%; display: none;">
-    (預估範圍：$0 - $0)
-</div>
+        <div class="detail-line total-row" style="align-items: center;">
+            <span style="font-weight:900;">總計金額</span>
+            <span id="price-tag" class="price-text">$0</span>
+        </div>
+        <div id="price-range-display" class="price-range-small"></div>
+
         <button class="btn-line" onclick="copyAndLine()">
             <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" width="20"> 複製資訊並預約
         </button>
@@ -265,14 +261,12 @@
                 document.getElementById('long-fee').innerText = "$" + longDistFee;
                 document.getElementById('time-fee').innerText = "$" + timeFee;
                 document.getElementById('price-tag').innerText = "$" + currentTotal;
-                // --- 新增：計算範圍 (低標 90% ~ 高標 110%) ---
-let minRange = Math.floor((currentTotal * 0.9) / 10) * 10;
-let maxRange = Math.ceil((currentTotal * 1.1) / 10) * 10;
 
-const rangeEl = document.getElementById('price-range');
-rangeEl.innerText = `( 視路況預估範圍：$${minRange} - $${maxRange} )`;
-rangeEl.style.display = 'block'; // 顯示該區塊
-// ------------------------------------------
+                // --- 僅新增：計算並顯示預估範圍 (±10%) ---
+                let minRange = Math.floor((currentTotal * 0.9) / 10) * 10;
+                let maxRange = Math.ceil((currentTotal * 1.1) / 10) * 10;
+                document.getElementById('price-range-display').innerText = `( 視路況預估範圍：$${minRange} - $${maxRange} )`;
+                // ------------------------------------
 
                 feeInfoBox.innerHTML = `
                     <div class="fee-title">📋 計費說明</div>
@@ -292,6 +286,7 @@ rangeEl.style.display = 'block'; // 顯示該區塊
             }
         });
     }
+
 function copyAndLine() {
         const isPremium = document.getElementById('premiumCar').checked;
         const isBooking = document.getElementById('enableBooking').checked;
@@ -321,7 +316,7 @@ function copyAndLine() {
 終點：${document.getElementById('end').value}
 路程資訊：${finalDist.toFixed(1)} km / ${finalTime} min 
 ---
-⚠️ 本報價由 I!ne一客 AI 系統產出，僅供參考;
+⚠️ 本報價由 I!ne一客 AI 系統產出，僅供參考; ${carNote}`;
 
         // 執行複製
         if (navigator.clipboard && navigator.clipboard.writeText) {
