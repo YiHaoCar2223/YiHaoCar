@@ -291,15 +291,13 @@ function copyAndLine() {
         let carNote = requirements.length > 0 ? `\n🌟 需求：${requirements.join('、')}` : "";
 
         // 3. 組合最終訊息 (確保包含 ${carNote})
-        const msg = `【I!ne一客 優質乘車服務】
+        const msg = `【共乘行程確認】
 預約時間：${bookingTime}
 起點：${document.getElementById('start').value}
 終點：${document.getElementById('end').value}
-路程資訊：${finalDist.toFixed(1)} km / ${finalTime} min
-預估車資：$${currentTotal}${carNote} 
+路程資訊：${finalDist.toFixed(1)} km / ${finalTime} min 
 ---
-⚠️ 本報價由 I!ne一客 系統產出，僅供參考
-⚠️ 實際依照司機跳錶收費為主`;
+⚠️ 本報價由 I!ne一客 AI 系統產出，僅供參考;
 
         // 執行複製
         if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -326,6 +324,7 @@ function copyAndLine() {
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
+
 
 
 
