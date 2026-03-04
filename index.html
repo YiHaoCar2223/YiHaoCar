@@ -37,6 +37,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-sizing: border-box;
             overflow: hidden;
+            margin-bottom: 50px;
         }
 
         .bg-watermark {
@@ -109,30 +110,14 @@
         }
 
         .long-distance-notice-box {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
             color: #ffd700;
             text-align: center;
-            line-height: 1.6;
-            margin-bottom: 15px;
+            line-height: 1.8;
+            margin-bottom: 20px;
             padding: 10px;
-            border: 1px dashed rgba(255, 215, 0, 0.3);
-            border-radius: 15px;
         }
-        
-        .static-fee-info {
-            background: rgba(255, 255, 255, 0.6) !important; 
-            backdrop-filter: blur(10px);
-            width: 100%; max-width: 480px;
-            padding: 25px 20px; border-radius: 30px;
-            margin-top: 20px; margin-bottom: 80px; 
-            box-sizing: border-box;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            z-index: 2;
-        }
-        .fee-title { font-size: 16px; font-weight: 900; color: var(--main-blue); margin-bottom: 12px; text-align: center; }
-        .fee-row { display: flex; justify-content: space-between; font-size: 14px; color: #2d3748; margin-bottom: 6px; }
-        .fee-row b { color: #000; }
 
         .btn-line { 
             width: 100%; background: var(--line-green); color: white; padding: 16px; 
@@ -189,15 +174,13 @@
         <div class="detail-line"><span>預估路程</span><b id="display-dist">0 km</b></div>
         <div class="detail-line"><span>預估時間</span><b id="display-duration">0 min</b></div>
         <hr style="border:0; border-top:1px dashed rgba(255,255,255,0.1); margin:15px 0;">
-        <div class="detail-line"><span>里程費用</span><b id="dist-fee">$0</b></div>
-        <div class="detail-line"><span>長途附加</span><b id="long-fee">$0</b></div>
-        <div class="detail-line"><span>行車時間</span><b id="time-fee">$0</b></div>
-        <div class="detail-line"><span>起步車資</span><b id="display-start-fee">$80</b></div>
         
-        <div class="total-display-area" style="margin-top: 15px;">
+        <div class="total-display-area">
             <div id="price-tag" class="price-text">$0</div>
             <div id="long-distance-notice" class="long-distance-notice-box" style="display:none;">
-                已達長途標準 請複製資訊至對話框與客服人員索取直收優惠價
+                🌟已達長途標準🌟<br>
+                請至對話框<br>
+                索取直收優惠價
             </div>
             <div id="price-range-display" class="price-range-small"></div>
         </div>
@@ -206,15 +189,6 @@
             <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" width="20"> 複製資訊並預約
         </button>
     </div>
-</div>
-
-<div class="static-fee-info" id="fee-info-box">
-    <div class="fee-title">📋 計費標準</div>
-    <div class="fee-row"><span><b>隨機派遣起步價</span>80 元</b></div>
-    <div class="fee-row"><span><b>指定進口車起步價</span>150 元</b></div>
-    <div class="fee-row"><span><b>基本里程費</span>15 元 / km</b></div>
-    <div class="fee-row"><span><b>行車時間費</span>3 元 / min</b></div>
-    <div class="fee-row"><span><b>長途附加費(逾15km)</span>10 元 / km </b></div>
 </div>
 
 <script>
@@ -243,7 +217,6 @@
         const startVal = document.getElementById('start').value;
         const endVal = document.getElementById('end').value;
         const btn = document.getElementById('calc-btn');
-        const feeInfoBox = document.getElementById('fee-info-box');
         if (!startVal || !endVal) { alert('請填寫完整地址'); return; }
         
         btn.disabled = true; btn.innerText = "規劃中...";
@@ -268,16 +241,11 @@
 
                 document.getElementById('display-dist').innerText = finalDist.toFixed(1) + " km";
                 document.getElementById('display-duration').innerText = finalTime + " min";
-                document.getElementById('display-start-fee').innerText = "$" + startFee;
-                document.getElementById('dist-fee').innerText = "$" + baseDistFee;
-                document.getElementById('long-fee').innerText = "$" + longDistFee;
-                document.getElementById('time-fee').innerText = "$" + timeFee;
 
                 const priceTag = document.getElementById('price-tag');
                 const rangeDisplay = document.getElementById('price-range-display');
                 const longNotice = document.getElementById('long-distance-notice');
 
-                // 當車資大於等於 2000 時，金額與範圍均隱藏
                 if (currentTotal >= 2000) {
                     priceTag.style.display = 'none';
                     rangeDisplay.style.display = 'none';
@@ -292,20 +260,7 @@
                     let maxRange = Math.ceil((currentTotal * 1.1) / 10) * 10;
                     rangeDisplay.innerText = `( 視路況預估範圍：$${minRange} - $${maxRange} )`;
                 }
-
-                feeInfoBox.innerHTML = `
-                    <div class="fee-title">📋 計費說明</div>
-                    <div class="fee-row" style="display:block; font-size:13px; line-height:1.6; color:#2d3748;">
-                        <p>🌟 點複製資訊後跳轉至Line對話框長按貼上即可貼上行程</p>
-                        <p>🌟 跨縣市長途搭乘可點擊選單長途優惠索取直收優惠價</p>
-                        <p>🌟 隨機派遣如果搭到進口車，起步價依然是 <b>80</b> 元</p>
-                        <p>🌟 避開收費路段為可行駛台74、76、61等快速道路</p>
-                        <p>🌟 避開高速公路為行駛平面，不走國道及快速道路</p>
-                        <p>🌟 試算僅為參考，若差異過大可聯絡客服進行說明</p>
-                    </div>
-                `;
                 
-                detailMsg = finalDist.toFixed(1) + "km/" + finalTime + "min | 里程$" + baseDistFee + "+長途$" + longDistFee + "+時間$" + timeFee + "+起步$" + startFee;
                 document.getElementById('result').style.display = 'block';
                 document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
             }
