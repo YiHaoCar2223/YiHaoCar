@@ -281,8 +281,8 @@
                     longNotice.style.display = 'none';
                     
                     priceTag.innerText = "$" + currentTotal;
-                    let minRange = Math.floor((currentTotal * 0.9) / 10) * 10;
-                    let maxRange = Math.ceil((currentTotal * 1.1) / 10) * 10;
+                    let minRange = Math.floor((currentTotal * 0.95) / 10) * 10;
+                    let maxRange = Math.ceil((currentTotal * 1.2) / 10) * 10;
                     rangeDisplay.innerText = `( 視路況預估範圍：$${minRange} - $${maxRange} )`;
                 }
                 
@@ -342,6 +342,7 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
+
 
 
 
