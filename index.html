@@ -206,29 +206,7 @@
     </div>
 </div>
 
-<script>
-    let map, directionsService, directionsRenderer;
-    let currentTotal = 0;
-    let finalDist = 0;
-    let finalTime = 0;
-    let detailMsg = "";
-
-    function toggleBookingTime() {
-        const container = document.getElementById('booking-time-container');
-        container.style.display = document.getElementById('enableBooking').checked ? 'block' : 'none';
-    }
-
-    function initMap() {
-        directionsService = new google.maps.DirectionsService();
-        directionsRenderer = new google.maps.DirectionsRenderer({ polylineOptions: { strokeColor: "#4a90e2", strokeWeight: 6 } });
-        map = new google.maps.Map(document.getElementById("map"), { zoom: 13, center: { lat: 24.1477, lng: 120.6736 }, disableDefaultUI: true, zoomControl: true });
-        directionsRenderer.setMap(map);
-        const opt = { componentRestrictions: { country: "tw" } };
-        new google.maps.places.Autocomplete(document.getElementById('start'), opt);
-        new google.maps.places.Autocomplete(document.getElementById('end'), opt);
-    }
-
-    function calculateFare() {
+function calculateFare() {
         const startVal = document.getElementById('start').value;
         const endVal = document.getElementById('end').value;
         const btn = document.getElementById('calc-btn');
@@ -247,12 +225,25 @@
                 finalDist = leg.distance.value / 1000;
                 finalTime = Math.ceil(leg.duration.value / 60);
                 
-                let startFee = document.getElementById('premiumCar').checked ? 150 : 80;
+                // --- 費率計算邏輯開始 ---
+                let isPremium = document.getElementById('premiumCar').checked;
+                let startFee = isPremium ? 150 : 80;
                 let baseDistFee = Math.round(finalDist * 15);
                 let intDist = Math.floor(finalDist); 
                 let longDistFee = intDist > 15 ? (intDist - 15) * 10 : 0;
                 let timeFee = finalTime * 3;
-                currentTotal = Math.floor((baseDistFee + longDistFee + timeFee + startFee) / 10) * 10;
+
+                // 1. 計算原始總和並乘上 1.05 倍
+                let rawTotal = (baseDistFee + longDistFee + timeFee + startFee) * 1.05;
+
+                // 2. 判斷進口車低消 300 元邏輯
+                if (isPremium && rawTotal < 300) {
+                    rawTotal = 300;
+                }
+
+                // 3. 最後進行十位數去尾數 (例如 356 -> 350)
+                currentTotal = Math.floor(rawTotal / 10) * 10;
+                // --- 費率計算邏輯結束 ---
 
                 document.getElementById('display-dist').innerText = finalDist.toFixed(1) + " km";
                 document.getElementById('display-duration').innerText = finalTime + " min";
@@ -268,9 +259,8 @@
                     midNotice.style.display = 'none';
                     longNotice.style.display = 'block';
                 } else if (currentTotal >= 1050) {
-                    // 區間：1050 ~ 1999 -> 隱藏預估範圍
                     priceTag.style.display = 'block';
-                    rangeDisplay.style.display = 'none'; // 修改處：取消顯示預估範圍
+                    rangeDisplay.style.display = 'none'; 
                     midNotice.style.display = 'block';
                     longNotice.style.display = 'none';
                     priceTag.innerText = "$" + currentTotal;
