@@ -206,7 +206,28 @@
     </div>
 </div>
 
-function calculateFare() {
+<script>
+    let map, directionsService, directionsRenderer;
+    let currentTotal = 0;
+    let finalDist = 0;
+    let finalTime = 0;
+
+    function toggleBookingTime() {
+        const container = document.getElementById('booking-time-container');
+        container.style.display = document.getElementById('enableBooking').checked ? 'block' : 'none';
+    }
+
+    function initMap() {
+        directionsService = new google.maps.DirectionsService();
+        directionsRenderer = new google.maps.DirectionsRenderer({ polylineOptions: { strokeColor: "#4a90e2", strokeWeight: 6 } });
+        map = new google.maps.Map(document.getElementById("map"), { zoom: 13, center: { lat: 24.1477, lng: 120.6736 }, disableDefaultUI: true, zoomControl: true });
+        directionsRenderer.setMap(map);
+        const opt = { componentRestrictions: { country: "tw" } };
+        new google.maps.places.Autocomplete(document.getElementById('start'), opt);
+        new google.maps.places.Autocomplete(document.getElementById('end'), opt);
+    }
+
+    function calculateFare() {
         const startVal = document.getElementById('start').value;
         const endVal = document.getElementById('end').value;
         const btn = document.getElementById('calc-btn');
@@ -225,25 +246,22 @@ function calculateFare() {
                 finalDist = leg.distance.value / 1000;
                 finalTime = Math.ceil(leg.duration.value / 60);
                 
-                // --- 費率計算邏輯開始 ---
-                let isPremium = document.getElementById('premiumCar').checked;
+                const isPremium = document.getElementById('premiumCar').checked;
                 let startFee = isPremium ? 150 : 80;
                 let baseDistFee = Math.round(finalDist * 15);
                 let intDist = Math.floor(finalDist); 
                 let longDistFee = intDist > 15 ? (intDist - 15) * 10 : 0;
                 let timeFee = finalTime * 3;
-
-                // 1. 計算原始總和並乘上 1.05 倍
+                
+                // 核心修改：倍率改為 1.05
                 let rawTotal = (baseDistFee + longDistFee + timeFee + startFee) * 1.05;
 
-                // 2. 判斷進口車低消 300 元邏輯
+                // 核心修改：進口車低消 300
                 if (isPremium && rawTotal < 300) {
                     rawTotal = 300;
                 }
 
-                // 3. 最後進行十位數去尾數 (例如 356 -> 350)
                 currentTotal = Math.floor(rawTotal / 10) * 10;
-                // --- 費率計算邏輯結束 ---
 
                 document.getElementById('display-dist').innerText = finalDist.toFixed(1) + " km";
                 document.getElementById('display-duration').innerText = finalTime + " min";
@@ -260,7 +278,7 @@ function calculateFare() {
                     longNotice.style.display = 'block';
                 } else if (currentTotal >= 1050) {
                     priceTag.style.display = 'block';
-                    rangeDisplay.style.display = 'none'; 
+                    rangeDisplay.style.display = 'none';
                     midNotice.style.display = 'block';
                     longNotice.style.display = 'none';
                     priceTag.innerText = "$" + currentTotal;
@@ -309,30 +327,19 @@ function calculateFare() {
 ---
 ⚠️ 本報價由 I!ne AI 系統產出，僅供參考; ${carNote}`;
 
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(msg).then(() => {
-                alert('資訊已複製，請至 Line 貼上訊息！'); 
-                window.location.href = "https://lin.ee/o8sVnUW";
-            }).catch(err => {
-                console.error('無法複製', err);
-                alert('複製失敗，請手動截圖');
-            });
-        } else {
-            const textArea = document.createElement("textarea");
-            textArea.value = msg;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-            alert('資訊已複製！');
-            window.location.href = "https://lin.ee/o8sVnUW";
-        }
+        const textArea = document.createElement("textarea");
+        textArea.value = msg;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('資訊已複製，請至 Line 貼上訊息！');
+        window.location.href = "https://lin.ee/o8sVnUW";
     }
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
-
 
 
 
