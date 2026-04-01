@@ -133,6 +133,14 @@
             display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer;
             margin-top: 15px;
         }
+
+        /* 新增：加入好友按鍵樣式 */
+        .btn-add-friend {
+            width: 100%; background: #ffffff; color: #06c755; padding: 12px; 
+            font-size: 16px; font-weight: 700; border: 2px solid #06c755; border-radius: 20px; 
+            display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer;
+            margin-top: 10px; text-decoration: none; box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
@@ -203,6 +211,10 @@
         <button class="btn-line" onclick="copyAndLine()">
             <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" width="20"> 複製資訊並預約
         </button>
+
+        <a href="https://lin.ee/o8sVnUW" target="_blank" class="btn-add-friend">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" width="20"> 加入 LINE 好友
+        </a>
     </div>
 </div>
 
@@ -253,10 +265,8 @@
                 let longDistFee = intDist > 15 ? (intDist - 15) * 10 : 0;
                 let timeFee = finalTime * 3;
                 
-                // 核心修改：倍率改為 1.05
                 let rawTotal = (baseDistFee + longDistFee + timeFee + startFee) * 1.05;
 
-                // 核心修改：進口車低消 300
                 if (isPremium && rawTotal < 300) {
                     rawTotal = 300;
                 }
@@ -340,7 +350,6 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
-
 
 
 
