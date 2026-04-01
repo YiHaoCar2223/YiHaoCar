@@ -134,12 +134,16 @@
             margin-top: 15px;
         }
 
-        /* 新增：加入好友按鍵樣式 */
+        /* 加入好友按鍵樣式 */
         .btn-add-friend {
-            width: 100%; background: #ffffff; color: #06c755; padding: 12px; 
-            font-size: 16px; font-weight: 700; border: 2px solid #06c755; border-radius: 20px; 
+            width: 100%; background: rgba(255, 255, 255, 0.1); color: #fff; padding: 12px; 
+            font-size: 15px; font-weight: 700; border: 1px solid #06c755; border-radius: 20px; 
             display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer;
-            margin-top: 10px; text-decoration: none; box-sizing: border-box;
+            margin-top: 12px; text-decoration: none; box-sizing: border-box;
+            transition: 0.3s;
+        }
+        .btn-add-friend:hover {
+            background: rgba(6, 199, 85, 0.2);
         }
     </style>
 </head>
@@ -184,6 +188,10 @@
     
     <button id="calc-btn" class="btn-calculate" onclick="calculateFare()">規劃行程並試算費用</button>
 
+    <a href="https://lin.ee/o8sVnUW" target="_blank" class="btn-add-friend">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" width="18"> 諮詢客服 / 加入好友
+    </a>
+
     <div id="result" class="result-panel">
         <div class="detail-line"><span>需求類別</span><b id="display-type">即時出發</b></div>
         <div class="detail-line" id="res-time-row" style="display:none;"><span>預約時間</span><b id="display-time">-</b></div>
@@ -213,7 +221,7 @@
         </button>
 
         <a href="https://lin.ee/o8sVnUW" target="_blank" class="btn-add-friend">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" width="20"> 加入 LINE 好友
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" width="18"> 加入 LINE 好友
         </a>
     </div>
 </div>
@@ -350,7 +358,6 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtgKupEUkOqUXV5bQMx_5PlXofFu-0vO4&libraries=places&callback=initMap&language=zh-TW" async defer></script>
 </body>
 </html>
-
 
 
 
